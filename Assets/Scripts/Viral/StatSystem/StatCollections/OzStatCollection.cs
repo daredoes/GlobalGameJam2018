@@ -1,6 +1,6 @@
 ﻿namespace Viral.StatSystem
 {
-    public class WarriorStatCollection : StatCollection
+    public class OzStatCollection : StatCollection
     {
         public override int MaxInventoryCapasity
         {
