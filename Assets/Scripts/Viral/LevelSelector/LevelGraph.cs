@@ -134,10 +134,148 @@ namespace Viral
                         }
                         break;
                     case Level.Location.Type.TRICEPTS:
+                        foreach (Level.Location.Side side in System.Enum.GetValues(typeof(Level.Location.Side)))
+                        {
+                            switch (side)
+                            {
+                                case Level.Location.Side.NULL:
+                                    break;
+                                case Level.Location.Side.NONE:
+                                    break;
+                                case Level.Location.Side.LEFT:
+
+                                case Level.Location.Side.RIGHT:
+                                    graph.Add(
+                                    new Level.Location(location, side),
+                                    AddVertexArrayToNode(
+                                        new Vertex[] {
+                                            new Vertex(
+                                                Level.Location.Type.BICEPTS,
+                                                side,
+                                                1),
+                                        }));
+                                    break;
+                            }
+                        }
                         break;
-                    case 6:
+                    case Level.Location.Type.PECTORALS:
+                        foreach (Level.Location.Side side in System.Enum.GetValues(typeof(Level.Location.Side)))
+                        {
+                            switch (side)
+                            {
+                                case Level.Location.Side.NULL:
+                                    break;
+                                case Level.Location.Side.NONE:
+                                    break;
+                                case Level.Location.Side.LEFT:
+
+                                case Level.Location.Side.RIGHT:
+                                    graph.Add(
+                                    new Level.Location(location, side),
+                                    AddVertexArrayToNode(
+                                        new Vertex[] {
+                                            new Vertex(
+                                                Level.Location.Type.SPINE,
+                                                Level.Location.Side.NONE,
+                                                3),
+                                            new Vertex(
+                                                Level.Location.Type.HEART,
+                                                Level.Location.Side.NONE,
+                                                3),
+                                            new Vertex(
+                                                Level.Location.Type.PECTORALS,
+                                                side == Level.Location.Side.LEFT ? Level.Location.Side.RIGHT : Level.Location.Side.LEFT,
+                                                2),
+                                            new Vertex(
+                                                Level.Location.Type.BICEPTS,
+                                                side,
+                                                1)
+
+                                        }));
+                                    break;
+                            }
+                        }
                         break;
-                    case 7:
+                    case Level.Location.Type.ABDOMEN:
+                        graph.Add(
+                            new Level.Location(location, Level.Location.Side.NONE),
+                            AddVertexArrayToNode(
+                                new Vertex[] {
+                                    new Vertex(
+                                        Level.Location.Type.COLON,
+                                        Level.Location.Side.NONE,
+                                        2),
+                                    new Vertex(
+                                        Level.Location.Type.PECTORALS,
+                                        Level.Location.Side.LEFT,
+                                        2),
+                                    new Vertex(
+                                        Level.Location.Type.PECTORALS,
+                                        Level.Location.Side.RIGHT, 
+                                        2),
+                                    new Vertex(
+                                        Level.Location.Type.QUADRICEPS,
+                                        Level.Location.Side.LEFT,
+                                        1),
+                                    new Vertex(
+                                        Level.Location.Type.QUADRICEPS,
+                                        Level.Location.Side.RIGHT,
+                                        1)
+                                }));
+                        break;
+                    case Level.Location.Type.QUADRICEPS:
+                        foreach (Level.Location.Side side in System.Enum.GetValues(typeof(Level.Location.Side)))
+                        {
+                            switch (side)
+                            {
+                                case Level.Location.Side.NULL:
+                                    break;
+                                case Level.Location.Side.NONE:
+                                    break;
+                                case Level.Location.Side.LEFT:
+
+                                case Level.Location.Side.RIGHT:
+                                    graph.Add(
+                                        new Level.Location(location, side),
+                                        AddVertexArrayToNode(
+                                            new Vertex[] {
+                                                new Vertex(
+                                                    Level.Location.Type.ABDOMEN, 
+                                                    Level.Location.Side.NONE, 
+                                                    2),
+                                                new Vertex(
+                                                    Level.Location.Type.CALVES,
+                                                    side,
+                                                    1),
+                                            }));
+                                    break;
+                            }
+                        }
+                        break;
+                    case Level.Location.Type.CALVES:
+                        foreach (Level.Location.Side side in System.Enum.GetValues(typeof(Level.Location.Side)))
+                        {
+                            switch (side)
+                            {
+                                case Level.Location.Side.NULL:
+                                    break;
+                                case Level.Location.Side.NONE:
+                                    break;
+                                case Level.Location.Side.LEFT:
+
+                                case Level.Location.Side.RIGHT:
+                                    graph.Add(
+                                    new Level.Location(location, side),
+                                    AddVertexArrayToNode(
+                                        new Vertex[] {
+                                            new Vertex(
+                                                Level.Location.Type.QUADRICEPS,
+                                                side,
+                                                1),
+                                        }));
+                                    break;
+                            }
+                        }
                         break;
                 }
             }
