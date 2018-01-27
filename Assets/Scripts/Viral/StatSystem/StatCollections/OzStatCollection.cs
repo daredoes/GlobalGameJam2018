@@ -24,7 +24,7 @@
 
             #region ATTRIBUTES
             ((StatAttribute)this[StatType.AbsorbRate]).Base = 2;
-            ((StatAttribute)this[StatType.Vampirsm]).Base = 4;
+            ((StatAttribute)this[StatType.Vampirism]).Base = 4;
             #endregion
 
             #region STATS            

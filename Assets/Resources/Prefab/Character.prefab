@@ -242,7 +242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89ed0eb12f429924492687d44ea249f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterSprites: {fileID: 0}
+  characterSprites: {fileID: 4350274633304760}
   shadow: {fileID: 1001856523392162}
   _mass: 1
   _grounded: 1

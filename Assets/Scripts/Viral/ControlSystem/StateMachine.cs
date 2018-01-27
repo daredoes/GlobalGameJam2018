@@ -11,7 +11,6 @@ namespace Viral.ControlSystem
     /// </summary>
     public class StateMachine : MonoBehaviour
     {
-
         protected float timeEnteredState;
 
         private bool isActive = true;
@@ -122,6 +121,12 @@ namespace Viral.ControlSystem
             }
             return returnValue as T;
 
+        }
+
+        private void Update()
+        {
+            SuperUpdate();
+            return;
         }
 
         /// <summary>

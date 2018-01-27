@@ -9,9 +9,9 @@ namespace Viral.StatSystem
 	public enum StatType
 	{
 		None = 0,
-		Vampirsm = 2,
-		AbsorbRate = 3,
-		Health = 4,
-		Power = 5
+		Vampirism = 1,
+		AbsorbRate = 2,
+		Health = 3,
+		Power = 4
 	}
 }
