@@ -37,11 +37,15 @@ public class PoolManager : MonoBehaviour {
 
             for (int i = 0; i < poolSize; ++i)
             {
-                PooledObject spawned = ((GameObject)Instaniate(obj.GameObject)).GetComponent<PooledObject>();
+                PooledObject spawned = (Instaniate(obj.GameObject)).GetComponent<PooledObject>();
                 pools[poolID].Enqueue(spawned);
             }
 
-        } 
+        }
+        else
+        {
+            throw new Exception("That poolID is already taken");
+        }
     }
 
     public void Acquire(string type)
@@ -51,6 +55,10 @@ public class PoolManager : MonoBehaviour {
         if (obj == null)
         {
             obj = Instantiate((Resources.Load("Prefabs/" + type) as GameObject)).GetComponent<PooledObject>();
+            if (obj == null)
+            {
+                throw new Exception("Coudl not find PooledObject of that type");
+            }
         }
 
         //It should keep closure on the type local as well? Maybe wrong will test
