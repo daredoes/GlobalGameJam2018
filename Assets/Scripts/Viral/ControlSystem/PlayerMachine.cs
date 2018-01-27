@@ -129,7 +129,7 @@ namespace Viral.ControlSystem
         {
             Debug.Log("[Player Machine]: IDLE");
             grounded = true;
-            //anim.SetBool(GameConstants.ANIM_GROUNDED, grounded);
+            anim.SetBool("GROUND", grounded);
             EnableShadow(true);
             moveDirection.y = 0;
         }
@@ -163,7 +163,8 @@ namespace Viral.ControlSystem
         {
             Debug.Log("[Player Machine]: WALK");
             walking = true;
-           // anim.SetBool(GameConstants.ANIM_WALKING, walking);
+            //anim.SetBool(GameConstants.ANIM_WALKING, walking);
+            anim.SetFloat("SPEED", Mathf.Abs(moveDirection.x));
         }
 
         void Walk_SuperUpdate()
@@ -190,6 +191,8 @@ namespace Viral.ControlSystem
                 return;
             }
 
+            anim.SetFloat("SPEED", Mathf.Abs(moveDirection.x));
+
             // apply horizontal speed smoothing it. dont really do this with Lerp. Use SmoothDamp or something that provides more control
             //var smoothedMovementFactor = (currentState.ToString() == PlayerStates.Jump.ToString()) ? groundDamping : inAirDamping; // how fast do we change direction?
             //float runSpeed = 5.0f; //Get from StatSystem
@@ -207,6 +210,7 @@ namespace Viral.ControlSystem
             Debug.Log("[Player Machine]: JUMP");
             moveDirection.y += CalculateJumpSpeed(jumpHeight, gravity);
             grounded = false;
+            anim.SetBool("GROUND", grounded);
         }
 
         void Jump_SuperUpdate()
@@ -216,13 +220,14 @@ namespace Viral.ControlSystem
                 currentState = PlayerStates.Idle;
                 return;
             }
-            //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);  
+            anim.SetFloat("V_SPEED", moveDirection.y);  
         }
         
         void Fall_EnterState()
         {
             Debug.Log("[Player Machine]: FALL");
             grounded = false;
+            anim.SetBool("GROUND", grounded);
         }
 
         void Fall_SuperUpdate()
