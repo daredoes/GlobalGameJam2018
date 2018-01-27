@@ -120,21 +120,11 @@ namespace Viral.ControlSystem
             }
         }
 
-        protected bool AcquiringGround
-        {
-            get
-            {
-                return false;//return Controller.currentGround.IsGrounded(false, 0.01f);
-            }
-        }
-
         protected bool IsGrounded
         {
             get
             {
                 return true;
-                //return Controller.isGrounded;
-                //return true;// Controller.currentGround.IsGrounded(true, 0.5f);
             }
         }
 

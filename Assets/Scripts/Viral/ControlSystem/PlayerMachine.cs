@@ -205,10 +205,8 @@ namespace Viral.ControlSystem
         void Jump_EnterState()
         {
             Debug.Log("[Player Machine]: JUMP");
-            moveDirection.y = Mathf.Sqrt(2f * jumpHeight * -gravity);
+            moveDirection.y += CalculateJumpSpeed(jumpHeight, gravity);
             grounded = false;
-            //moveDirection += Controller.up * CalculateJumpSpeed(jumpHeight, gravity);
-            //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);
         }
 
         void Jump_SuperUpdate()
