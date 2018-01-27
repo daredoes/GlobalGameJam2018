@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Viral.StatSystem;
+using UnityStandardAssets.CrossPlatformInput;
 using UnityEngine;
 
 namespace Viral.ControlSystem
@@ -10,19 +12,9 @@ namespace Viral.ControlSystem
         protected Transform characterSprites;
         [SerializeField]
         protected GameObject shadow;
-        [SerializeField]
-        private SuperCharacterController _controller;
-        [SerializeField]
-        private ParticleSystem _feetParticles;
-        [SerializeField]
-        private Collider hitBoxCollider;
-
-        public DamageType currentDamageType;
-        public Vector3 damageDirection;
 
         protected Transform _trans;
         protected Animator _anim;
-        protected Entity _entity;
         protected StatCollection _statCollection;
 
         protected Vector3 moveDirection;
@@ -74,30 +66,6 @@ namespace Viral.ControlSystem
         #endregion
 
         #region PROPERTIES
-        public SuperCharacterController Controller
-        {
-            get
-            {
-                if (_controller == null)
-                {
-                    _controller = GetComponent<SuperCharacterController>();
-                }
-                return _controller;
-            }
-        }
-
-        protected ParticleSystem feetParticles
-        {
-            get
-            {
-                if (_feetParticles == null)
-                {
-                    _feetParticles = GetComponent<ParticleSystem>();
-                }
-                return _feetParticles;
-            }
-        }
-
         public new Transform transform
         {
             get
@@ -122,21 +90,6 @@ namespace Viral.ControlSystem
             }
         }
 
-        public Entity entity
-        {
-            get
-            {
-                if (_entity == null)
-                {
-                    _entity = GetComponent<Entity>();
-                }
-                return _entity;
-            }
-        }
-
-    
-        
-
         public StatCollection statCollection
         {
             get
@@ -146,19 +99,6 @@ namespace Viral.ControlSystem
                     _statCollection = GetComponent<StatCollection>();
                 }
                 return _statCollection;
-            }
-        }
-
-      
-        public Collider HitBox
-        {
-            get
-            {
-                if (hitBoxCollider == null)
-                {
-                    Debug.LogError("NO HIT BOX COLLIDER SET");
-                }
-                return hitBoxCollider;
             }
         }
 
@@ -195,7 +135,7 @@ namespace Viral.ControlSystem
         {
             get
             {
-                return Controller.currentGround.IsGrounded(false, 0.01f);
+                return false;//return Controller.currentGround.IsGrounded(false, 0.01f);
             }
         }
 
@@ -203,7 +143,7 @@ namespace Viral.ControlSystem
         {
             get
             {
-                return Controller.currentGround.IsGrounded(true, 0.5f);
+                return true;// Controller.currentGround.IsGrounded(true, 0.5f);
             }
         }
 
@@ -240,32 +180,6 @@ namespace Viral.ControlSystem
             protected set
             {
                 _walking = value;
-            }
-        }
-
-
-
-        public bool attacking_melee
-        {
-            get
-            {
-                return _attacking_melee;
-            }
-            set
-            {
-                _attacking_melee = value;
-            }
-        }
-
-        public bool throwing
-        {
-            get
-            {
-                return _throwing;
-            }
-            set
-            {
-                _throwing = value;
             }
         }
 
@@ -357,27 +271,9 @@ namespace Viral.ControlSystem
                 flinchTime = value;
             }
         }
-
-        public Vector3 Impact
-        {
-            get
-            {
-                return impact;
-            }
-
-            set
-            {
-                impact = value;
-            }
-        }
         #endregion
 
         #region METHODS
-        protected virtual void EmitLandedParticles(int amt = 5)
-        {
-            feetParticles.Emit(amt);
-        }
-
         /// <summary>
         /// Initialize Character Controller
         /// </summary>
@@ -393,28 +289,6 @@ namespace Viral.ControlSystem
         protected virtual void EnableShadow(bool enable)
         {
             shadow.SetActive(enable);
-        }
-
-        /// <summary>
-        /// Enables and disables the character's dust particles
-        /// </summary>
-        /// <param name="enable"></param>
-        protected virtual void EnableDust(bool enable)
-        {
-            if (enable)
-            {
-                if (!feetParticles.isPlaying)
-                {
-                    feetParticles.Play();
-                }
-            }
-            else
-            {
-                if (!feetParticles.isStopped)
-                {
-                    feetParticles.Stop();
-                }
-            }
         }
 
         /// <summary>
@@ -444,10 +318,10 @@ namespace Viral.ControlSystem
             Vector3 temp = characterSprites.transform.localScale;
             temp.x *= -1;
             characterSprites.transform.localScale = temp;
-            ParticleSystem.ShapeModule shape = feetParticles.shape;
-            temp = feetParticles.shape.rotation;
-            temp.y *= -1;
-            shape.rotation = temp;
+            //ParticleSystem.ShapeModule shape = feetParticles.shape;
+            //temp = feetParticles.shape.rotation;
+            //temp.y *= -1;
+            //shape.rotation = temp;
             OnFlip();
         }
 
@@ -467,15 +341,15 @@ namespace Viral.ControlSystem
                 {
                     currentAttack = 0;
                 }
-                currentCombo = 0;
+                //currentCombo = 0;
             }
 
-            anim.SetTrigger(GameConstants.ANIM_ATTACK);
+            anim.SetTrigger("ANIM_ATTACK");
             lastAttack = currentAttack;
             timeSinceLastAttack = 0f;
         }
 
-        public abstract void Hit(int damage, DamageType dType, Vector3 direction);
+        public abstract void Hit(int damage, Vector3 direction);
 
         protected abstract void ApplyDamageType(bool forceKnockBack = false);
         #endregion
