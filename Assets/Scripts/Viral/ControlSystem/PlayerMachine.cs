@@ -57,7 +57,7 @@ namespace Viral.ControlSystem
             }
         }
 
-        public new bool MaintainingGround
+        public new bool IsGrounded
         {
             get
             {
@@ -106,8 +106,6 @@ namespace Viral.ControlSystem
             base.EarlyGlobalSuperUpdate();
             //Flip the character
             if ((Input.Current.MoveInput.x > 0 && !facingRight) || (Input.Current.MoveInput.x < 0 && facingRight)) { Flip(); }
-
-          
         }
 
         protected override void LateGlobalSuperUpdate()
@@ -117,10 +115,8 @@ namespace Viral.ControlSystem
             // Move the player by our velocity every frame
             base.LateGlobalSuperUpdate();
             //transform.position += moveDirection * Time.deltaTime;
-            moveDirection.y += gravity * Time.deltaTime;
             Controller.move(moveDirection * Time.deltaTime);
             moveDirection = Controller.velocity;
-            Debug.Log(moveDirection);
         }
 
         #region STATES
@@ -129,7 +125,7 @@ namespace Viral.ControlSystem
         // Jump_SuperUpdate()
         void Idle_EnterState()
         {
-            Debug.Log("IDLE");
+            Debug.Log("[Player Machine]: IDLE");
             grounded = true;
             //anim.SetBool(GameConstants.ANIM_GROUNDED, grounded);
             EnableShadow(true);
@@ -143,7 +139,8 @@ namespace Viral.ControlSystem
                 return;
             }
 
-            if (!MaintainingGround)
+            Debug.Log("[Player Machine]: " + IsGrounded);
+            if (!IsGrounded)
             {
                 currentState = PlayerStates.Fall;
                 return;
@@ -155,24 +152,13 @@ namespace Viral.ControlSystem
                 return;
             }
 
-            if (Input.Current.AttackInput)
-            {
-                currentState = PlayerStates.Attack_Melee;
-                return;
-            }
-
-            if (Input.Current.MagicInput)
-            {
-                currentState = PlayerStates.Attack_Magic;
-                return;
-            }
-
             // Apply friction to slow us to a halt
             moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, walkDecceleration * Time.deltaTime);
         }
 
         void Walk_EnterState()
         {
+            Debug.Log("[Player Machine]: WALK");
             walking = true;
            // anim.SetBool(GameConstants.ANIM_WALKING, walking);
         }
@@ -185,7 +171,7 @@ namespace Viral.ControlSystem
                 return;
             }
 
-            if (!MaintainingGround)
+            if (!IsGrounded)
             {
                 currentState = PlayerStates.Fall;
                 return;
@@ -205,7 +191,6 @@ namespace Viral.ControlSystem
             //var smoothedMovementFactor = (currentState.ToString() == PlayerStates.Jump.ToString()) ? groundDamping : inAirDamping; // how fast do we change direction?
             //float runSpeed = 5.0f; //Get from StatSystem
             //velocity.x = Mathf.Lerp(velocity.x, normalizedHorizontalSpeed * runSpeed, Time.deltaTime * smoothedMovementFactor);
-
         }
 
         void Walk_ExitState()
@@ -216,6 +201,7 @@ namespace Viral.ControlSystem
 
         void Jump_EnterState()
         {
+            Debug.Log("[Player Machine]: JUMP");
             moveDirection.y = Mathf.Sqrt(2f * jumpHeight * -gravity);
             grounded = false;
             //moveDirection += Controller.up * CalculateJumpSpeed(jumpHeight, gravity);
@@ -224,7 +210,7 @@ namespace Viral.ControlSystem
 
         void Jump_SuperUpdate()
         {
-            if (MaintainingGround)
+            if (IsGrounded)
             {
                 currentState = PlayerStates.Idle;
                 return;
@@ -234,18 +220,20 @@ namespace Viral.ControlSystem
         
         void Fall_EnterState()
         {
+            Debug.Log("[Player Machine]: FALL");
             grounded = false;
         }
 
         void Fall_SuperUpdate()
         {
-            if (MaintainingGround)
+            if (IsGrounded)
             {
                 currentState = PlayerStates.Idle;
                 return;
             }
 
             moveDirection -= Vector3.up * gravity * Time.deltaTime;
+            Debug.Log("[Player Machine]: " + moveDirection);
             //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);
         }
         #endregion

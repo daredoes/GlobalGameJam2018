@@ -128,7 +128,7 @@ namespace Viral.ControlSystem
             }
         }
 
-        protected bool MaintainingGround
+        protected bool IsGrounded
         {
             get
             {
