@@ -21,7 +21,6 @@ namespace Viral.ControlSystem
         }
 
         #region VARS
-        int normalizedHorizontalSpeed;
         bool previouslyOnGround;
         float groundDamping = 20f;
         float inAirDamping = 5f;
@@ -115,6 +114,9 @@ namespace Viral.ControlSystem
             // Move the player by our velocity every frame
             base.LateGlobalSuperUpdate();
             //transform.position += moveDirection * Time.deltaTime;
+            var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
+            moveDirection.x = Mathf.Lerp(moveDirection.x, LocalMovement.x * speed, Time.deltaTime * smoothedMovementFactor);
+            moveDirection.y -= gravity * Time.deltaTime;
             Controller.move(moveDirection * Time.deltaTime);
             moveDirection = Controller.velocity;
         }
@@ -129,6 +131,7 @@ namespace Viral.ControlSystem
             grounded = true;
             //anim.SetBool(GameConstants.ANIM_GROUNDED, grounded);
             EnableShadow(true);
+            moveDirection.y = 0;
         }
 
         void Idle_SuperUpdate()
@@ -153,9 +156,9 @@ namespace Viral.ControlSystem
             }
 
             // Apply friction to slow us to a halt
-            moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, walkDecceleration * Time.deltaTime);
+            moveDirection.y = 0; //Vector3.MoveTowards(moveDirection, Vector3.zero, walkDecceleration * Time.deltaTime);
         }
-
+        
         void Walk_EnterState()
         {
             Debug.Log("[Player Machine]: WALK");
