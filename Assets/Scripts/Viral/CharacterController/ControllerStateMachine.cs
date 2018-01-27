@@ -23,8 +23,6 @@ namespace Viral.ControlSystem
         protected Transform _trans;
         protected Animator _anim;
         protected Entity _entity;
-        protected InventoryManager _inventoryManager;
-        protected WeaponManager _weaponManager;
         protected StatCollection _statCollection;
 
         protected Vector3 moveDirection;
@@ -39,18 +37,12 @@ namespace Viral.ControlSystem
         protected bool _canMove = true;
         [SerializeField]
         protected bool _walking = false;
-        [SerializeField]
-        protected bool _blocking = false;
-        [SerializeField]
-        protected bool _attacking_melee = false;
-        [SerializeField]
-        protected bool _attacking_magic = false;
-        [SerializeField]
-        protected bool _throwing = false;
+
         [SerializeField]
         private bool isTakingDamage = false;
         [SerializeField]
         private bool isHit = false;
+
         private bool isFlinching = false;
         [SerializeField]
         private float flinchTime = 0.0f;
@@ -74,8 +66,7 @@ namespace Viral.ControlSystem
         protected float _timeSinceLastAttack;
         protected int _lastAttack = -1;
         protected int _currentAttack = 0;
-        protected int _currentCombo;
-        protected int _comboThreshHold = 5;
+  
 
         protected bool stunSet = false;
         protected float _stunStart = 0f;
@@ -143,17 +134,8 @@ namespace Viral.ControlSystem
             }
         }
 
-        public InventoryManager inventoryManager
-        {
-            get
-            {
-                if (_inventoryManager == null)
-                {
-                    _inventoryManager = GetComponent<InventoryManager>();
-                }
-                return _inventoryManager;
-            }
-        }
+    
+        
 
         public StatCollection statCollection
         {
@@ -167,18 +149,7 @@ namespace Viral.ControlSystem
             }
         }
 
-        public WeaponManager weaponManager
-        {
-            get
-            {
-                if (_weaponManager == null)
-                {
-                    _weaponManager = GetComponent<WeaponManager>();
-                }
-                return _weaponManager;
-            }
-        }
-
+      
         public Collider HitBox
         {
             get
@@ -272,17 +243,6 @@ namespace Viral.ControlSystem
             }
         }
 
-        public bool blocking
-        {
-            get
-            {
-                return _blocking;
-            }
-            protected set
-            {
-                _blocking = value;
-            }
-        }
 
 
         public bool attacking_melee
@@ -294,18 +254,6 @@ namespace Viral.ControlSystem
             set
             {
                 _attacking_melee = value;
-            }
-        }
-
-        public bool attacking_magic
-        {
-            get
-            {
-                return _attacking_magic;
-            }
-            set
-            {
-                _attacking_magic = value;
             }
         }
 
@@ -358,30 +306,7 @@ namespace Viral.ControlSystem
             }
         }
 
-        public int currentCombo
-        {
-            get
-            {
-                return _currentCombo;
-            }
-            set
-            {
-                _currentCombo = value;
-            }
-        }
-
-        public int comboThreashold
-        {
-            get
-            {
-                return _comboThreshHold;
-            }
-            set
-            {
-                _comboThreshHold = value;
-            }
-        }
-
+       
         public bool IsTakingDamage
         {
             get
@@ -508,65 +433,7 @@ namespace Viral.ControlSystem
             return Mathf.Sqrt(3 * force * gravity);
         }
 
-        /// <summary>
-        /// Switches the character's primary weapon to the next available primary
-        /// </summary>
-        protected virtual void SwitchPrimary()
-        {
-            if (!inventoryManager.PrimarySlotEquipped)
-            {
-                if (inventoryManager.checkForWeapon(true))
-                {
-                    weaponManager.primaryRenderer.gameObject.SetActive(false);
-                    inventoryManager.switchWeapon(true);
-                    anim.SetTrigger(GameConstants.ANIM_SWITCH_PRIMARY);
-                }
-            }
-            else
-            {
-                weaponManager.primaryRenderer.gameObject.SetActive(false);
-                inventoryManager.switchWeapon(true);
-                anim.SetTrigger(GameConstants.ANIM_SWITCH_PRIMARY);
-            }
-        }
-
-        /// <summary>
-        /// Switches the character's secondary weapon to the next available secondary
-        /// </summary>
-        protected virtual void SwitchSecondary()
-        {
-            if (!inventoryManager.SecondarySlotEquipped)
-            {
-                if (inventoryManager.checkForWeapon(false))
-                {
-                    weaponManager.primaryRenderer.gameObject.SetActive(false);
-                    inventoryManager.switchWeapon(false);
-                    anim.SetTrigger(GameConstants.ANIM_SWITCH_SECONDARY);
-                }
-            }
-            else
-            {
-                weaponManager.primaryRenderer.gameObject.SetActive(false);
-                inventoryManager.switchWeapon(false);
-                anim.SetTrigger(GameConstants.ANIM_SWITCH_SECONDARY);
-            }
-        }
-
-        /// <summary>
-        /// Switches the character's projectile to the next available projectile
-        /// </summary>
-        protected void SwitchProjectile()
-        {
-            inventoryManager.switchProjectile();
-        }
-
-        /// <summary>
-        /// Switches the character's throwable weapon to the next available throwable weapon
-        /// </summary>
-        protected void SwitchThrowable()
-        {
-            inventoryManager.switchThrowable();
-        }
+      
 
         /// <summary>
         /// Flips the character's sprites
@@ -591,16 +458,7 @@ namespace Viral.ControlSystem
         {
             if (timeSinceLastAttack <= _attackThreshHold)
             {
-                if (currentCombo > comboThreashold)
-                {
-                    //CAN USE SPECIAL - TRUE
-                }
-                currentCombo++;
-                currentAttack = lastAttack == 0 ? (Random.Range(0, 100) % 2 == 0 ? 1 : Random.Range(0, 4)) : Random.Range(0, 4);
-                if (currentAttack == 1 && lastAttack != 0)
-                {
-                    currentAttack = 0;
-                }
+             
             }
             else
             {
@@ -611,20 +469,10 @@ namespace Viral.ControlSystem
                 }
                 currentCombo = 0;
             }
+
             anim.SetTrigger(GameConstants.ANIM_ATTACK);
             lastAttack = currentAttack;
             timeSinceLastAttack = 0f;
-        }
-
-        /// <summary>
-        /// Do a special attack
-        /// </summary>
-        protected virtual void Magic()
-        {
-            //TODO: IMPLEMENT SPECIAL ATTACK and remove from current magic stat
-            Debug.Log("[PlayerMachine]: MAGIC ATTACK!");
-            anim.SetTrigger(GameConstants.ANIM_MAGIC);
-            attacking_magic = false;
         }
 
         public abstract void Hit(int damage, DamageType dType, Vector3 direction);
