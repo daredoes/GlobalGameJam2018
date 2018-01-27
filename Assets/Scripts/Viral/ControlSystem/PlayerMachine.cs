@@ -163,8 +163,8 @@ namespace Viral.ControlSystem
         {
             Debug.Log("[Player Machine]: WALK");
             walking = true;
-            //anim.SetBool(GameConstants.ANIM_WALKING, walking);
-            anim.SetFloat("SPEED", Mathf.Abs(moveDirection.x));
+            anim.SetBool("WALKING", walking);
+            anim.SetFloat("H_SPEED", Mathf.Abs(moveDirection.x));
         }
 
         void Walk_SuperUpdate()
@@ -202,7 +202,8 @@ namespace Viral.ControlSystem
         void Walk_ExitState()
         {
             walking = false;
-           // anim.SetBool(GameConstants.ANIM_WALKING, walking);
+            anim.SetBool("WALKING", walking);
+            anim.SetFloat("H_SPEED", Mathf.Abs(moveDirection.x));
         }
 
         void Jump_EnterState()
