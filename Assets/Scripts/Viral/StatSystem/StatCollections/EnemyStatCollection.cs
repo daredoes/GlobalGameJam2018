@@ -1,6 +1,6 @@
 ﻿namespace Viral.StatSystem
 {
-    public class BarbariabStatCollection : StatCollection
+    public class EnemyStatCollection : StatCollection
     {
         public override int MaxInventoryCapasity
         {
