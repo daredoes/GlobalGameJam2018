@@ -191,7 +191,7 @@ namespace Viral.ControlSystem
                 return;
             }
 
-            anim.SetFloat("SPEED", Mathf.Abs(moveDirection.x));
+            anim.SetFloat("H_SPEED", Mathf.Abs(moveDirection.x));
 
             // apply horizontal speed smoothing it. dont really do this with Lerp. Use SmoothDamp or something that provides more control
             //var smoothedMovementFactor = (currentState.ToString() == PlayerStates.Jump.ToString()) ? groundDamping : inAirDamping; // how fast do we change direction?
