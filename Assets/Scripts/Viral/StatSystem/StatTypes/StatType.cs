@@ -9,17 +9,9 @@ namespace Viral.StatSystem
 	public enum StatType
 	{
 		None = 0,
-		Health = 1,
-		Magic = 2,
-		Defense = 3,
-		Power = 4,
-		Strength = 6,
-		Wisdom = 7,
-		Willpower = 8,
-		Dexterity = 9,
-		Intellect = 10,
-		Constitution = 11,
-		Fortitude = 12,
-		Agility = 13
+		Vampirsm = 2,
+		AbsorbRate = 3,
+		Health = 4,
+		Power = 5
 	}
 }

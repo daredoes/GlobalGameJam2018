@@ -70,32 +70,11 @@ namespace Viral.ControlSystem
             {
                 Vector3 moveInput = new Vector3(Horizontal, 0, Vertical);
                 bool jumpInput = CrossPlatformInputManager.GetButtonDown("Jump");
-                /*bool flipInput = CrossPlatformInputManager.GetButtonDown(Axes.Flip);
-                bool attackInput = CrossPlatformInputManager.GetButtonDown(Axes.Attack);
-                bool blockInput = CrossPlatformInputManager.GetButton(Axes.Block);
-                bool throwInput = CrossPlatformInputManager.GetButtonDown(Axes.Throw);
-                bool magicInput = CrossPlatformInputManager.GetButtonDown(Axes.Magic);
-                bool switchPrimary = CrossPlatformInputManager.GetButtonDown(Axes.SwitchPrimary);
-                bool switchSecondary = CrossPlatformInputManager.GetButtonDown(Axes.SwitchSecondary);
-                bool switchThrowable = CrossPlatformInputManager.GetButtonDown(Axes.SwitchThrowable);
-                bool switchProjectile = CrossPlatformInputManager.GetButtonDown(Axes.SwitchProjectile);
-                bool openInventory = CrossPlatformInputManager.GetButtonDown(Axes.OpenInventory);
-                bool itemPickUp = CrossPlatformInputManager.GetButtonDown(Axes.ItemPickUp);*/
+
                 Current = new Input()
                 {
                     MoveInput = moveInput,
-                    JumpInput = jumpInput,
-                    /*FlipInput = flipInput,
-                    BlockInput = blockInput,
-                    AttackInput = attackInput,
-                    MagicInput = magicInput,
-                    ThrowInput = throwInput,
-                    SwitchPrimaryInput = switchPrimary,
-                    SwitchSecondaryInput = switchSecondary,
-                    SwitchThrowableInput = switchThrowable,
-                    SwitchProjectileInput = switchProjectile,
-                    OpenInventory = openInventory,
-                    ItemPickUp = itemPickUp*/
+                    JumpInput = jumpInput
                 };
             }
             else

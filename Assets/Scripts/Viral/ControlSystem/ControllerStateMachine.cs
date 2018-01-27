@@ -34,11 +34,7 @@ namespace Viral.ControlSystem
         private bool isTakingDamage = false;
         [SerializeField]
         private bool isHit = false;
-
-        private bool isFlinching = false;
-        [SerializeField]
-        private float flinchTime = 0.0f;
-
+        
         [SerializeField]
         protected float _baseSpeed = 8.0f;
         [SerializeField]
@@ -52,13 +48,6 @@ namespace Viral.ControlSystem
         [SerializeField]
         protected float gravity = 20.0f;
         protected Vector3 impact = Vector3.zero;
-
-
-        protected float _attackThreshHold = 2f;
-        protected float _timeSinceLastAttack;
-        protected int _lastAttack = -1;
-        protected int _currentAttack = 0;
-  
 
         protected bool stunSet = false;
         protected float _stunStart = 0f;
@@ -143,7 +132,9 @@ namespace Viral.ControlSystem
         {
             get
             {
-                return true;// Controller.currentGround.IsGrounded(true, 0.5f);
+                return true;
+                //return Controller.isGrounded;
+                //return true;// Controller.currentGround.IsGrounded(true, 0.5f);
             }
         }
 
@@ -182,95 +173,6 @@ namespace Viral.ControlSystem
                 _walking = value;
             }
         }
-
-        protected float timeSinceLastAttack
-        {
-            get
-            {
-                return _timeSinceLastAttack;
-            }
-            set
-            {
-                _timeSinceLastAttack = value;
-            }
-        }
-
-        public int currentAttack
-        {
-            get
-            {
-                return _currentAttack;
-            }
-            set
-            {
-                _currentAttack = value;
-            }
-        }
-
-
-        public int lastAttack
-        {
-            get
-            {
-                return _lastAttack;
-            }
-            set
-            {
-                _lastAttack = value;
-            }
-        }
-
-       
-        public bool IsTakingDamage
-        {
-            get
-            {
-                return isTakingDamage;
-            }
-
-            set
-            {
-                isTakingDamage = value;
-            }
-        }
-
-        public bool IsHit
-        {
-            get
-            {
-                return isHit;
-            }
-
-            set
-            {
-                isHit = value;
-            }
-        }
-
-        public bool IsFlinching
-        {
-            get
-            {
-                return isFlinching;
-            }
-            set
-            {
-                isFlinching = value;
-            }
-        }
-
-        public float FlinchTime
-        {
-            get
-            {
-                return flinchTime;
-            }
-
-            set
-            {
-                flinchTime = value;
-            }
-        }
         #endregion
 
         #region METHODS
@@ -301,13 +203,7 @@ namespace Viral.ControlSystem
         {
             return Mathf.Sqrt(2 * jumpHeight * gravity);
         }
-
-        protected virtual float CalculateKnockBackSpeed(float force, float gravity)
-        {
-            return Mathf.Sqrt(3 * force * gravity);
-        }
-
-      
+     
 
         /// <summary>
         /// Flips the character's sprites
@@ -324,34 +220,6 @@ namespace Viral.ControlSystem
             //shape.rotation = temp;
             OnFlip();
         }
-
-        /// <summary>
-        /// Do a melee attack
-        /// </summary>
-        protected virtual void Attack()
-        {
-            if (timeSinceLastAttack <= _attackThreshHold)
-            {
-             
-            }
-            else
-            {
-                currentAttack = Random.Range(0, 4);
-                if (currentAttack == 1)
-                {
-                    currentAttack = 0;
-                }
-                //currentCombo = 0;
-            }
-
-            anim.SetTrigger("ANIM_ATTACK");
-            lastAttack = currentAttack;
-            timeSinceLastAttack = 0f;
-        }
-
-        public abstract void Hit(int damage, Vector3 direction);
-
-        protected abstract void ApplyDamageType(bool forceKnockBack = false);
         #endregion
 
         #region EVENT HANDLERS
