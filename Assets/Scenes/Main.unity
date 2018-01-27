@@ -398,7 +398,7 @@ MonoBehaviour:
   Y: 1
   Z: 0
   minDistance: 0.1
-  maxDistance: 10
+  maxDistance: 0.5
   minSpeed: 1
   enableMaxSpeed: 0
   maxSpeed: 2
