@@ -47,6 +47,8 @@ namespace Viral
         GameObject SettingsPanel;
         [SerializeField]
         GameObject InGamePanel;
+        [SerializeField]
+        GameObject LevelSelectPanel;
 
         [HideInInspector]
         public List<GameObject> panelList;
@@ -109,9 +111,10 @@ namespace Viral
         {
             PopulatePanelList(new GameObject[]
             {
-                StartMenuPanel == null ? GameObject.Find("StartMenuPanel") : StartMenuPanel,
-                InGamePanel    == null ? GameObject.Find("InGamePanel")    : InGamePanel,
-                SettingsPanel  == null ? GameObject.Find("SettingsPanel")  : SettingsPanel
+                StartMenuPanel   == null ? GameObject.Find("StartMenuPanel")   : StartMenuPanel,
+                InGamePanel      == null ? GameObject.Find("InGamePanel")      : InGamePanel,
+                SettingsPanel    == null ? GameObject.Find("SettingsPanel")    : SettingsPanel,
+                LevelSelectPanel == null ? GameObject.Find("LevelSelectPanel") : LevelSelectPanel
             });
         }
 
