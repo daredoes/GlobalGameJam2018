@@ -2,45 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ammo : MonoBehaviour {
+
+namespace Viral.ControlSystem.AttackSystem {
+    public class Ammo : MonoBehaviour {
 
 
-    public float damage;
-    public float speed;
+        public float damage;
+        public float speed;
+        public Viral.ControlSystem.AttackSystem.DamageType dmgType;
 
 
-    //Actually shoot off the Ammo
-	public IEnumerator Shoot(float damageAmp, float speedAmp, int direction)
-    {
-        damage *= damageAmp;
-        speed *= speedAmp;
 
-
-        //Probably just add force to be done with it, could deal with patterns alter
-
-        while (this.gameObject.activeInHierarchy)
+        //Actually shoot off the Ammo
+        public IEnumerator Shoot(float damageAmp, float speedAmp, int direction)
         {
-            transform.Translate(Vector3.right * speed * direction);
-            Debug.Log("hello");
-            yield return new WaitForEndOfFrame();
+            damage *= damageAmp;
+            speed *= speedAmp;
+
+
+            //Probably just add force to be done with it, could deal with patterns alter
+
+            while (this.gameObject.activeInHierarchy)
+            {
+                transform.Translate(Vector3.right * speed * direction);
+                Debug.Log("hello");
+                yield return new WaitForEndOfFrame();
+            }
         }
-    }
 
-    
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Virus"))
+
+        void OnTriggerEnter2D(Collider2D other)
         {
-          
-            //Haven't merged in object pooling so commented out for now
-            //  GetComponent<PooledObject>().BackToPool();
+            
+                //GetComponent<PooledObject>().BackToPool();
+                Debug.Log("hello");
+                //SO this is called meaning did collide
+
+                //Call take damage on some script on the AI, not sure what but on something
+             other.GetComponent<Viral.ControlSystem.ControllerStateMachine>().TakeDamage(damage, dmgType, other.transform.position - transform.position);
+    
+
             
 
-            //Need to hurt other viruses by this bullet's damage.
         }
 
+
+
     }
-
-
-
 }

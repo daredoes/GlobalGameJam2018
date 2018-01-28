@@ -150,12 +150,18 @@ namespace Viral.ControlSystem.AttackSystem
                 }
                 if (!Input.Current.AttackInput)
                 {
-                    coolDownLeft = coolDownTime;
+                    
 
-                    StartCoroutine(bulletCharging.GetComponent<Ammo>().Shoot(damageAmp, speedAmp, GetComponent<PlayerMachine>().facingRight ? 1 : -1));
-                    bulletCharging = null;
-                    damageAmp = 0;
-                    speedAmp = 0;
+                    if (bulletCharging != null)
+                    {
+                        if (coolDownLeft <= 0)
+                            coolDownLeft = coolDownTime;
+
+                        StartCoroutine(bulletCharging.GetComponent<Ammo>().Shoot(damageAmp, speedAmp, GetComponent<PlayerMachine>().facingRight ? 1 : -1));
+                        bulletCharging = null;
+                        damageAmp = 0;
+                        speedAmp = 0;
+                    }
 
                 }
                
@@ -164,7 +170,7 @@ namespace Viral.ControlSystem.AttackSystem
             }
             else if (coolDownLeft > 0)
             {
-                Debug.Log(coolDownLeft);
+
                 coolDownLeft -= Time.deltaTime;
             }
         }
