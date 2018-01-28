@@ -12,6 +12,7 @@ namespace Viral.StatSystem
 		Vampirism = 1,
 		AbsorbRate = 2,
 		Health = 3,
-		Power = 4
+		Power = 4,
+		KillCount = 5
 	}
 }

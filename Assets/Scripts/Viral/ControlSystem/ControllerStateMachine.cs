@@ -194,7 +194,7 @@ namespace Viral.ControlSystem
             return Mathf.Sqrt(2 * jumpHeight * gravity);
         }
      
-        public virtual void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
+        public virtual void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction, Viral.ControlSystem.ControllerStateMachine attacker)
         {
             Debug.Log("Previous health" + ((StatVital)statCollection[StatType.Health]).Value);
             ((StatVital)statCollection[StatType.Health]).Value -= (int)dmgAmount;

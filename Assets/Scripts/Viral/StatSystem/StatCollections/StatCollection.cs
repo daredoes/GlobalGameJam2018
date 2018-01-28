@@ -436,6 +436,7 @@ namespace Viral.StatSystem
             CreateOrGetStat<StatAttribute>(StatType.Power).Name = StatTypeDatabase.GetByType(StatType.Power).Name;
             CreateOrGetStat<StatAttribute>(StatType.Vampirism).Name = StatTypeDatabase.GetByType(StatType.Vampirism).Name;
             CreateOrGetStat<StatAttribute>(StatType.AbsorbRate).Name = StatTypeDatabase.GetByType(StatType.AbsorbRate).Name;
+            CreateOrGetStat<StatVital>(StatType.KillCount).Name = StatTypeDatabase.GetByType(StatType.KillCount).Name;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Viral.ControlSystem.AttackSystem {
                 BackToPool();
 
                 //Call take damage on some script on the AI, not sure what but on something
-                other.GetComponent<Viral.ControlSystem.AiMachine>().TakeDamage(damage, dmgType, other.transform.position - transform.position);
+                other.GetComponent<Viral.ControlSystem.AiMachine>().TakeDamage(damage, dmgType, other.transform.position - transform.position,null);
             }
 
             

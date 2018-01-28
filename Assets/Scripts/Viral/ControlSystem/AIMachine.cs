@@ -160,7 +160,14 @@ namespace Viral.ControlSystem
             }*/
             // Put any code in here you want to run AFTER the state's update function.
             // This is run regardless of what state you're in
-            // Move the player by our velocity every frame
+            //((StatVital)statCollection[StatType.Health]).Value += healAmount;
+
+            if (((StatSystem.StatVital)statCollection[StatSystem.StatType.Health]).Value <= 0)
+            {
+                //I have pool but will use later.
+                Destroy(this);
+            }
+            // Move the player by our velocity every frame 
             base.LateGlobalSuperUpdate();
             //transform.position += moveDirection * Time.deltaTime;
             var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
@@ -403,7 +410,7 @@ namespace Viral.ControlSystem
 
         
 
-            player.TakeDamage(damageDealt, Viral.ControlSystem.AttackSystem.DamageType.MELEE, transform.position - player.transform.position);
+            player.TakeDamage(damageDealt, Viral.ControlSystem.AttackSystem.DamageType.MELEE, transform.position - player.transform.position, this);
 
         }
 

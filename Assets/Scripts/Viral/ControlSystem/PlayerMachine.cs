@@ -154,7 +154,6 @@ namespace Viral.ControlSystem
         {
           
             Controller.onTriggerEnterEvent += CheckVirusHit;
-            Controller.onControllerCollidedEvent += OnControllerCollided;
 
         }
 
@@ -187,11 +186,6 @@ namespace Viral.ControlSystem
 
         }
 
-        void OnControllerCollided(RaycastHit2D hit)
-        {
-             Debug.Log(hit.transform.name);
-
-        }
 
     public override void Initialize()
         {
@@ -227,6 +221,7 @@ namespace Viral.ControlSystem
             // Move the player by our velocity every frame
 
             base.LateGlobalSuperUpdate();
+
 
 
             if (currentState.Equals(PlayerStates.Stun) || currentState.Equals(PlayerStates.Dead)) { }
@@ -455,14 +450,6 @@ namespace Viral.ControlSystem
 
             if (timeLeftToAbsorb > 0)
             {
-                //Works for entering state.
-                if (UnityEngine.Input.GetKeyDown(KeyCode.R))
-                {
-
-                    TakeDamage(1, AttackSystem.DamageType.MELEE, Vector3.zero);
-                    return;
-                }
-
                 timeLeftToAbsorb -= Time.deltaTime;
             }
             else
@@ -470,7 +457,13 @@ namespace Viral.ControlSystem
                 if (captured != null)
                 {
                     Heal();
+
+                    ((StatVital)statCollection[StatType.KillCount]).Value += 1;
+
+
+                    Debug.Log("Kill Count: " + ((StatVital)statCollection[StatType.KillCount]).Value);
                     Destroy(captured.gameObject);
+
                     //Add to stats the bonus from capturing virus
                     currentState = PlayerStates.Idle;
 
@@ -547,7 +540,7 @@ namespace Viral.ControlSystem
 
         }
 
-        public override void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
+        public override void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction, Viral.ControlSystem.ControllerStateMachine attacker)
         {
             ((StatVital)statCollection[StatType.Health]).Value -= (int)dmgAmount;
             Debug.Log("Current Health: " + ((StatVital)statCollection[StatType.Health]).Value);
@@ -565,8 +558,9 @@ namespace Viral.ControlSystem
                     return;
                     
                 case ControlSystem.AttackSystem.DamageType.MELEE:
-
-                    if (currentState.Equals(PlayerStates.Capture))
+                    
+                    //Need to check if they're same person, but attack not passed in
+                    if (currentState.Equals(PlayerStates.Capture) && captured != (AiMachine)(attacker))
                     {
                         captured.Release();
                         captured.transform.parent = null;
