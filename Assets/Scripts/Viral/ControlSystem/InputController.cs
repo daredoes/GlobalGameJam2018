@@ -10,6 +10,7 @@ namespace Viral.ControlSystem
         public Vector3 MoveInput;
         public Vector3 JumpInput;
         public Vector3 DashInput;
+        public Vector3 SlamInput;
         public bool FlipInput;
         public bool BlockInput;
         public bool AttackInput;
@@ -26,10 +27,15 @@ namespace Viral.ControlSystem
     public class InputController : MonoBehaviour
     {
         public Input Current;
+        [SerializeField]
         private Vector3 jumpStats;
+        [SerializeField]
         private Vector3 dashStats;
         [SerializeField]
+        private Vector3 slamStats;
+        [SerializeField]
         protected ControllerStateMachine csm;
+        
 
         public ControllerStateMachine CSM
         {
@@ -62,7 +68,14 @@ namespace Viral.ControlSystem
 
         Vector3 Jump{
             get{
-                return jumpStats;
+                if (CrossPlatformInputManager.GetButtonDown("Jump"))
+                {
+                    return jumpStats;
+                }
+                else
+                {
+                    return Vector3.zero;
+                }
             }
             set{
                 jumpStats = value;
@@ -71,10 +84,34 @@ namespace Viral.ControlSystem
 
         Vector3 Dash{
             get{
-                return dashStats;
+                if (CrossPlatformInputManager.GetButtonDown("Dash"))
+                {
+                    return dashStats;
+                }
+                else
+                {
+                    return Vector3.zero;
+                }
             }
             set{
                 dashStats = value;
+            }
+        }
+        Vector3 Slam
+        {
+            get
+            {
+                if(CrossPlatformInputManager.GetButtonDown("Slam")){
+                    return slamStats;
+                }
+                else {
+                    return Vector3.zero;
+                }
+
+            }
+            set
+            {
+                slamStats = value;
             }
         }
 
@@ -90,25 +127,15 @@ namespace Viral.ControlSystem
             if (CSM.IsActive)
             {
                 Vector3 moveInput = new Vector3(Horizontal, 0, Vertical);
-                if(CrossPlatformInputManager.GetButtonDown("Jump")){
-                    Jump = new Vector3(0, 4f, 20f);
-                }
-                else{
-                    Jump = Vector3.zero;
-                }
-                if(CrossPlatformInputManager.GetButtonDown("Dash")){
-                    Dash = new Vector3(10f, 1f, 1f);
-                }
-                else{
-                    Dash = Vector3.zero;
-                }
+
 
 
                 Current = new Input()
                 {
                     MoveInput = moveInput,
                     JumpInput = Jump,
-                    DashInput = Dash
+                    DashInput = Dash,
+                    SlamInput = Slam
                 };
             }
             else
@@ -118,6 +145,7 @@ namespace Viral.ControlSystem
                     MoveInput = Vector3.zero,
                     JumpInput = Vector3.zero,
                     DashInput = Vector3.zero,
+                    SlamInput = Vector3.zero,
                     FlipInput = false,
                     BlockInput = false,
                     AttackInput = false,

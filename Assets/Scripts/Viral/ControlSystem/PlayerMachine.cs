@@ -16,6 +16,7 @@ namespace Viral.ControlSystem
             Capture,
             Stun,
             Dash,
+            Slam,
             Attack_Melee,
             Attack_Magic,
             Throw,
@@ -31,6 +32,8 @@ namespace Viral.ControlSystem
         float dashCooldown = 0.01f;
         float dashTime = 0f;
 
+        float slamCooldown = 0.01f;
+        float slamTime = 0f;
 
         public float StunTime 
         {
@@ -92,6 +95,18 @@ namespace Viral.ControlSystem
             get
             {
                 if(Time.time - dashTime >= dashCooldown){
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public bool CanSlam
+        {
+            get
+            {
+                if (Time.time - slamTime >= slamCooldown)
+                {
                     return true;
                 }
                 return false;
@@ -292,6 +307,11 @@ namespace Viral.ControlSystem
                 currentState = PlayerStates.Idle;
                 return;
             }
+            if (CanSlam && Input.Current.SlamInput != Vector3.zero)
+            {
+                currentState = PlayerStates.Slam;
+                return;
+            }
             if (CanDash && Input.Current.DashInput != Vector3.zero)
             {
                 currentState = PlayerStates.Dash;
@@ -299,6 +319,24 @@ namespace Viral.ControlSystem
             }
             anim.SetFloat("V_SPEED", moveDirection.y);  
         }
+
+        void Slam_EnterState()
+        {
+            slamTime = Time.time + slamCooldown;
+            moveDirection.y += CalculateJumpSpeed(Input.Current.SlamInput.y, Input.Current.SlamInput.z);
+            grounded = false;
+            anim.SetBool("GROUND", grounded);
+        }
+        void Slam_SuperUpdate()
+        {
+            if (IsGrounded)
+            {
+                currentState = PlayerStates.Idle;
+                return;
+            }
+            anim.SetFloat("V_SPEED", moveDirection.y);
+        }
+
         void Dash_EnterState(){
             Debug.Log("[Player Machine]: DASH");
             dashTime = Time.time + dashCooldown;
@@ -313,6 +351,11 @@ namespace Viral.ControlSystem
             if (IsGrounded)
             {
                 currentState = PlayerStates.Idle;
+                return;
+            }
+            if (CanSlam && Input.Current.SlamInput != Vector3.zero)
+            {
+                currentState = PlayerStates.Slam;
                 return;
             }
             if (CanDash && Input.Current.DashInput != Vector3.zero)

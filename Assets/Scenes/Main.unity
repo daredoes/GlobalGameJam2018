@@ -462,52 +462,11 @@ Prefab:
     - {fileID: 114097316544611742, guid: d12582d68c48f88449d2d2a1d67598a7, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: d12582d68c48f88449d2d2a1d67598a7, type: 2}
   m_IsPrefabParent: 0
---- !u!4 &1183126725 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4350274633304760, guid: d12582d68c48f88449d2d2a1d67598a7,
-    type: 2}
-  m_PrefabInternal: {fileID: 953880122}
---- !u!1 &1355475465 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1001856523392162, guid: d12582d68c48f88449d2d2a1d67598a7,
-    type: 2}
-  m_PrefabInternal: {fileID: 953880122}
 --- !u!1 &1607730207 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1932536310912362, guid: d12582d68c48f88449d2d2a1d67598a7,
     type: 2}
   m_PrefabInternal: {fileID: 953880122}
---- !u!114 &1607730208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1607730207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc8e2e5fb3fd24226b20824049e72e31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterSprites: {fileID: 1183126725}
-  shadow: {fileID: 1355475465}
-  _mass: 1
-  _grounded: 1
-  _facingRight: 1
-  _canMove: 1
-  _walking: 0
-  isTakingDamage: 0
-  isHit: 0
-  _baseSpeed: 8
-  walkAcceleration: 30
-  walkDecceleration: 30
-  jumpAcceleration: 10
-  jumpHeight: 4
-  dashHeight: 1
-  dashAcceleration: 20
-  dashGravity: 1
-  gravity: 20
-  dashCooldown: 0.5
-  _input: {fileID: 0}
 --- !u!114 &1607730209
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,6 +13,7 @@ namespace Viral.ControlSystem
             Walk,
             Jump,
             Dash,
+            Slam,
             Block,
             Juggle, // juggle / flinch state
             Attack_Melee,
@@ -29,9 +30,9 @@ namespace Viral.ControlSystem
         private float dashCooldown = 0.5f;
         float dashTime = 0f;
 
-        float dashTime = 0f;
-        float dashCooldown = 1f;
-
+        [SerializeField]
+        private float slamCooldown = 0.5f;
+        float slamTime = 0f;
 
         [SerializeField]
         private NoInputController _input;
@@ -82,6 +83,17 @@ namespace Viral.ControlSystem
                 return false;
             }
         }
+        public bool CanSlam
+        {
+            get
+            {
+                if (Time.time - slamTime >= slamCooldown)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
 
       
 
@@ -120,10 +132,6 @@ namespace Viral.ControlSystem
             currentState = States.Idle;
             statCollection.Init();
             base.Initialize();
-        }
-
-        public void FlipSprite(){
-            Flip();
         }
 
         protected override void EarlyGlobalSuperUpdate()
@@ -181,6 +189,7 @@ namespace Viral.ControlSystem
                 currentState = States.Dash;
                 return;
             }
+
 
             if (Input.Current.MoveInput != Vector3.zero)
             {
@@ -255,6 +264,7 @@ namespace Viral.ControlSystem
 
         void Jump_SuperUpdate()
         {
+            
             if (IsGrounded)
             {
                 currentState = States.Idle;
@@ -282,6 +292,7 @@ namespace Viral.ControlSystem
 
         void Dash_SuperUpdate()
         {
+            
             if (IsGrounded)
             {
                 currentState = States.Idle;

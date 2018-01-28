@@ -6,8 +6,6 @@ namespace Viral.ControlSystem
 {
     public class BasicAi : AiMovement
     {
-        float maxSpeed = 10f;
-        int direction = 1;
         public float acceleration = 1f;
         private Vector3 defaultDash = new Vector3(20f, 10f, 1f);
 
