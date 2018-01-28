@@ -6,7 +6,7 @@ namespace Viral.ControlSystem
 {
     public class RegularAi : AiMovement
     {
-        public float acceleration = 1f;
+        public float acceleration = 0.01f;
         private Vector3 defaultDash = new Vector3(20f, 10f, 1f);
 
         GameObject closestPlayer(){
@@ -56,9 +56,9 @@ namespace Viral.ControlSystem
             int accelerationToRight = 1;
             if (targetedPlayer)
             {
-                accelerationToRight = TurnToObject(absorbingPlayer(), am) ? 2 : -2;
+                accelerationToRight = targetedPlayer.transform.position.x > am.transform.position.x ? 1 : -1;
             }
-            am.Input.Horizontal += acceleration * accelerationToRight;
+            am.Input.Horizontal = acceleration * accelerationToRight;
 
 
             ReturnedInputs.MoveInput.x = am.Input.Horizontal;
