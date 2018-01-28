@@ -109,27 +109,12 @@ namespace Viral.StatSystem
             }
         }
 
-        public virtual int MaxInventoryCapasity
-        {
-            get
-            {
-                return 0;
-            }
-        }
 
         public virtual float MoveSpeed
         {
             get
             {
                 return 1;
-            }
-        }
-
-        public virtual float DefenseProtection
-        {
-            get
-            {
-                return 0;
             }
         }
 
@@ -147,6 +132,7 @@ namespace Viral.StatSystem
         public void Init()
         {
             //configure stats
+            Debug.Log("[STAT COLLECTION]: Init");
             ConfigureStats();
             initialized = true;
         }
@@ -445,21 +431,11 @@ namespace Viral.StatSystem
 
         protected virtual void ConfigureStats()
         {
-            //Attributes
-            CreateOrGetStat<StatAttribute>(StatType.Strength).Name = StatTypeDatabase.GetByType(StatType.Strength).Name;
-            CreateOrGetStat<StatAttribute>(StatType.Wisdom).Name = StatTypeDatabase.GetByType(StatType.Wisdom).Name;
-            CreateOrGetStat<StatAttribute>(StatType.Willpower).Name = StatTypeDatabase.GetByType(StatType.Willpower).Name;
-            CreateOrGetStat<StatAttribute>(StatType.Dexterity).Name = StatTypeDatabase.GetByType(StatType.Dexterity).Name;
-            CreateOrGetStat<StatAttribute>(StatType.Intellect).Name = StatTypeDatabase.GetByType(StatType.Intellect).Name;
-            CreateOrGetStat<StatAttribute>(StatType.Constitution).Name = StatTypeDatabase.GetByType(StatType.Constitution).Name;
-            CreateOrGetStat<StatAttribute>(StatType.Fortitude).Name = StatTypeDatabase.GetByType(StatType.Fortitude).Name;
-            CreateOrGetStat<StatAttribute>(StatType.Agility).Name = StatTypeDatabase.GetByType(StatType.Agility).Name;
-
             //Stats
-            CreateOrGetStat<StatRegeneratable>(StatType.Health).Name = StatTypeDatabase.GetByType(StatType.Health).Name;
-            CreateOrGetStat<StatRegeneratable>(StatType.Magic).Name = StatTypeDatabase.GetByType(StatType.Magic).Name;
-            CreateOrGetStat<StatAttribute>(StatType.Defense).Name = StatTypeDatabase.GetByType(StatType.Defense).Name;
+            CreateOrGetStat<StatVital>(StatType.Health).Name = StatTypeDatabase.GetByType(StatType.Health).Name;
             CreateOrGetStat<StatAttribute>(StatType.Power).Name = StatTypeDatabase.GetByType(StatType.Power).Name;
+            CreateOrGetStat<StatAttribute>(StatType.Vampirism).Name = StatTypeDatabase.GetByType(StatType.Vampirism).Name;
+            CreateOrGetStat<StatAttribute>(StatType.AbsorbRate).Name = StatTypeDatabase.GetByType(StatType.AbsorbRate).Name;
         }
     }
 }
