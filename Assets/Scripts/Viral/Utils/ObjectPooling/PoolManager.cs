@@ -37,18 +37,18 @@ public class PoolManager : MonoBehaviour {
 
             for (int i = 0; i < poolSize; ++i)
             {
-                PooledObject spawned = (Instaniate(obj.GameObject)).GetComponent<PooledObject>();
+                PooledObject spawned = (Instantiate(obj.gameObject)).GetComponent<PooledObject>();
                 pools[poolID].Enqueue(spawned);
             }
 
         }
         else
         {
-            throw new Exception("That poolID is already taken");
+            throw new System.Exception("That poolID is already taken");
         }
     }
 
-    public void Acquire(string type)
+    public PooledObject Acquire(string type)
     {
         PooledObject obj = pools[type].Dequeue();
 
@@ -57,7 +57,7 @@ public class PoolManager : MonoBehaviour {
             obj = Instantiate((Resources.Load("Prefabs/" + type) as GameObject)).GetComponent<PooledObject>();
             if (obj == null)
             {
-                throw new Exception("Coudl not find PooledObject of that type");
+                throw new System.Exception("Coudl not find PooledObject of that type");
             }
         }
 
