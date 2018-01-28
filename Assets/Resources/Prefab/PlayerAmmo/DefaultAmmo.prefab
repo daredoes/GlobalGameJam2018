@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 61994186967568644}
   - component: {fileID: 50336866249777240}
   - component: {fileID: 114232954437687912}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DefaultAmmo
   m_TagString: Virus
   m_Icon: {fileID: 0}

@@ -68,6 +68,12 @@ namespace Viral.ControlSystem.AttackSystem
             currentState = PlayerAttackType.Ranged;
             ammoType = AmmoType.DefaultAmmo;
 
+
+            foreach (var ammo in System.Enum.GetValues(typeof(AmmoType)))
+            {
+                GameObject prefab = Instantiate(Resources.Load("Prefab/PlayerAmmo/" + ammoType.ToString()) as GameObject);
+                PoolManager.instance.AddPool(ammo.ToString(),prefab.GetComponent<PooledObject>(), 12);
+            }
         }
 
         protected override void EarlyGlobalSuperUpdate()
@@ -79,11 +85,14 @@ namespace Viral.ControlSystem.AttackSystem
         {
             base.LateGlobalSuperUpdate();
             //Replace with controller input later, using unity input for testing
+
+            if (GetComponent<Viral.ControlSystem.PlayerMachine>().IsStunned) { return; }
+
+
             if (UnityEngine.Input.GetKeyDown(KeyCode.LeftShift))
             {
                 currentState = (currentState.Equals(PlayerAttackType.Melee)) ? PlayerAttackType.Ranged : PlayerAttackType.Melee;   
             }
-
         }
 
         void Melee_EnterState()
@@ -95,6 +104,8 @@ namespace Viral.ControlSystem.AttackSystem
 
         void Melee_SuperUpdate()
         {
+            if (GetComponent<Viral.ControlSystem.PlayerMachine>().IsStunned) { return; }
+
             if (UnityEngine.Input.GetKey(KeyCode.F))
             {
                 coolDownLeft = coolDownTime;
@@ -126,15 +137,16 @@ namespace Viral.ControlSystem.AttackSystem
 
             if (coolDownLeft <= 0) {
 
+                if (GetComponent<Viral.ControlSystem.PlayerMachine>().IsStunned) { return; }
 
                 if (Input.Current.AttackInput)
                 {
                     if (bulletCharging == null)
                     {
                         Debug.Log("Prefab/PlayerAmmo" + ammoType.ToString());
-                        bulletCharging = Instantiate(Resources.Load("Prefab/PlayerAmmo/" + ammoType.ToString()) as GameObject);
-                        //PooledObject ammoPrefab = PoolManager.instance.Acquire(ammoType.toString());
-
+                        //bulletCharging = Instantiate(Resources.Load("Prefab/PlayerAmmo/" + ammoType.ToString()) as GameObject);
+                        PooledObject ammoPrefab = PoolManager.instance.Acquire(ammoType.ToString());
+                        bulletCharging = ammoPrefab.gameObject;
 
                         //Will create spawn point for this, ugly and bad to keep shoving this shit but fuck itt
                         bulletCharging.transform.position = bulletSpawnPoint.position;

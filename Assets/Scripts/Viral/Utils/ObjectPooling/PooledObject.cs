@@ -8,9 +8,10 @@ public class PooledObject : MonoBehaviour {
     public event Death OnDeath;
     
     //Because cannot call event directly from inherited.
-    protected void Died()
+    protected void BackToPool()
     {
-        OnDeath();
+        if (OnDeath != null)
+            OnDeath();
     }
 }
     

@@ -19,11 +19,12 @@ namespace Viral.ControlSystem
             Attack_Melee,
             Attack_Magic,
             Throw,
-            Fall
+            Fall,
+            Captured
         }
 
         #region VARS
-        bool previouslyOnGround;
+        bool isCaptured;
         float groundDamping = 20f;
         float inAirDamping = 5f;
         [SerializeField]
@@ -51,6 +52,8 @@ namespace Viral.ControlSystem
                 return _input;
             }
         }
+
+      
 
         public CharacterController2D Controller
         {
@@ -118,6 +121,7 @@ namespace Viral.ControlSystem
 
         public void Start()
         {
+            Controller.onTriggerEnterEvent += (Collider2D other) => { if (other.CompareTag("Player")) { AttackPlayer(other.GetComponent<PlayerMachine>()); } };
             Initialize();
         }
 
@@ -131,6 +135,7 @@ namespace Viral.ControlSystem
             //inventoryManager.OnItemLeft += ItemLeft;
             currentState = States.Idle;
             statCollection.Init();
+
             base.Initialize();
         }
 
@@ -141,10 +146,18 @@ namespace Viral.ControlSystem
             base.EarlyGlobalSuperUpdate();
             //Flip the character
             if ((Input.Current.MoveInput.x > 0 && !facingRight) || (Input.Current.MoveInput.x < 0 && facingRight)) { Flip(); }
+
         }
 
         protected override void LateGlobalSuperUpdate()
         {
+
+            //To prevent stackoverflow would I just need this in all updates?
+          /*  if (isCaptured)
+            {
+                currentState = States.Captured;
+                return;
+            }*/
             // Put any code in here you want to run AFTER the state's update function.
             // This is run regardless of what state you're in
             // Move the player by our velocity every frame
@@ -163,22 +176,27 @@ namespace Viral.ControlSystem
         // Jump_SuperUpdate()
         void Idle_EnterState()
         {
-            Debug.Log("[Player Machine]: IDLE");
+         //   Debug.Log("[Player Machine]: IDLE");
             grounded = true;
             anim.SetBool("GROUND", grounded);
             EnableShadow(true);
             moveDirection.y = 0;
+
         }
 
         void Idle_SuperUpdate()
         {
+            if (isCaptured)
+            {
+                currentState = States.Captured;
+                return;
+            }
             if (Input.Current.JumpInput != Vector3.zero)
             {
                 currentState = States.Jump;
                 return;
             }
 
-            Debug.Log("[AI Machine]: " + IsGrounded);
             if (!IsGrounded)
             {
                 currentState = States.Fall;
@@ -211,6 +229,11 @@ namespace Viral.ControlSystem
 
         void Walk_SuperUpdate()
         {
+            if (isCaptured)
+            {
+                currentState = States.Captured;
+                return;
+            }
             if (Input.Current.JumpInput != Vector3.zero)
             {
                 currentState = States.Jump;
@@ -264,7 +287,12 @@ namespace Viral.ControlSystem
 
         void Jump_SuperUpdate()
         {
-            
+            if (isCaptured)
+            {
+                currentState = States.Captured;
+                return;
+            }
+
             if (IsGrounded)
             {
                 currentState = States.Idle;
@@ -280,7 +308,6 @@ namespace Viral.ControlSystem
 
         void Dash_EnterState()
         {
-            Debug.Log("[Player Machine]: DASH");
             dashTime = Time.time + dashCooldown;
             moveDirection.y += CalculateJumpSpeed(Input.Current.DashInput.y, Input.Current.DashInput.z);
             int direction = facingRight ? 1 : -1;
@@ -292,6 +319,11 @@ namespace Viral.ControlSystem
 
         void Dash_SuperUpdate()
         {
+            if (isCaptured)
+            {
+                currentState = States.Captured;
+                return;
+            }
             
             if (IsGrounded)
             {
@@ -308,7 +340,7 @@ namespace Viral.ControlSystem
         
         void Fall_EnterState()
         {
-            Debug.Log("[Player Machine]: FALL");
+           // Debug.Log("[Player Machine]: FALL");
             grounded = false;
             anim.SetBool("GROUND", grounded);
         }
@@ -321,10 +353,71 @@ namespace Viral.ControlSystem
                 return;
             }
 
-            moveDirection -= Vector3.up * gravity * Time.deltaTime;
-            Debug.Log("[Player Machine]: " + moveDirection);
+         //   moveDirection -= Vector3.up * gravity * Time.deltaTime;
             //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);
         }
+
+        //Will set bool instead, instead of changing state cause state changes should only come from other states
+        //otherwise stack overflow happens
+       
+
+        //Hindsight could've been property and with getter could see if already captured if branched off to multiplayer
+        public void Capture()
+        {
+            isCaptured = true;
+        }
+        public void Release()
+        {
+            isCaptured = false;
+        }
+        void Captured_EnterState()
+        {
+            moveDirection = Vector3.zero;
+
+        }
+
+        void AttackPlayer(PlayerMachine player)
+        {
+            //Multiplier for type of enemy.
+            float damageDealt = 1;
+            
+            //Just random hard values for now.
+            Debug.Log("player attacked");
+            if (currentState.Equals( States.Slam)) {
+                Debug.Log("Slammed player");
+                damageDealt += 10;
+
+            }
+            else if (currentState.Equals(States.Dash))
+            {
+                Debug.Log("Dashed player");
+                damageDealt += 5;
+
+            }
+            else if (currentState.Equals(States.Throw))
+            {
+                Debug.Log("Threw player");
+                damageDealt += 7;
+            }
+
+
+        
+
+            player.TakeDamage(damageDealt, Viral.ControlSystem.AttackSystem.DamageType.MELEE, transform.position - player.transform.position);
+
+        }
+
+        void Captured_SuperUpdate()
+        {
+            if (!isCaptured) {
+                currentState = States.Idle;
+                Debug.Log("released");
+                return;
+            }
+            moveDirection = Vector3.zero;
+        }
+
+
         #endregion
     }
 }

@@ -18,27 +18,30 @@ public class PoolManager : MonoBehaviour {
         else if (instance != this)
         {
             Destroy(this);
+            return;
         }
 
+        pools = new Dictionary<string, Queue<PooledObject>>();
         DontDestroyOnLoad(this);
     }
 
-	// Use this for initialization
-	void Start () {
 
-        pools = new Dictionary<string, Queue<PooledObject>>();
-	}
-	
     public void AddPool(string poolID, PooledObject obj, int poolSize)
     {
-        if (!pools.ContainsKey(poolID))
+        if (instance.pools == null)
         {
-            pools[poolID] = new Queue<PooledObject>();
+            instance.pools = new Dictionary<string, Queue<PooledObject>>();
+        }
+        if (!instance.pools.ContainsKey(poolID))
+        {
+            instance.pools[poolID] = new Queue<PooledObject>();
 
             for (int i = 0; i < poolSize; ++i)
             {
                 PooledObject spawned = (Instantiate(obj.gameObject)).GetComponent<PooledObject>();
-                pools[poolID].Enqueue(spawned);
+                spawned.gameObject.SetActive(false);
+                instance.pools[poolID].Enqueue(spawned);
+                Debug.Log("ghgh");
             }
 
         }
@@ -54,6 +57,7 @@ public class PoolManager : MonoBehaviour {
 
         if (obj == null)
         {
+            Debug.Log("nuttin");
             obj = Instantiate((Resources.Load("Prefabs/" + type) as GameObject)).GetComponent<PooledObject>();
             if (obj == null)
             {
@@ -62,7 +66,7 @@ public class PoolManager : MonoBehaviour {
         }
 
         //It should keep closure on the type local as well? Maybe wrong will test
-        obj.OnDeath += () => { pools[type].Enqueue(obj); };
+        obj.OnDeath += () => { obj.gameObject.SetActive(false); instance.pools[type].Enqueue(obj); };
 
         return obj;
     } 
