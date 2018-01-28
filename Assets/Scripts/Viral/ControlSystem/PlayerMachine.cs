@@ -341,36 +341,6 @@ namespace Viral.ControlSystem
             moveDirection -= Vector3.up * gravity * Time.deltaTime;
             //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);
         }
-
-
-        void Dash_EnterState()
-        {   
-         
-            Debug.Log("Dash started");  
-
-            moveDirection.y += CalculateJumpSpeed(jumpHeight / 3, gravity);
-           
-            grounded = false;
-        }
-
-
-        //This will be checking to transition into capture state or throwing
-        void Dash_SuperUpdate()
-        {
-
-            Debug.Log("Dashing");
-
-            int direction = (moveDirection.x < 0) ? -1 : 1;
-            moveDirection.x += speed * Time.deltaTime * 2 * direction;
-
-
-            if (IsGrounded)
-            {
-                currentState = PlayerStates.Idle;
-                return;
-            }
-            
-        }
         
 
         //Only enters this state if current state dash and collides with something
