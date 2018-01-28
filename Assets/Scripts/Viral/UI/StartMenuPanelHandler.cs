@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Viral
+namespace Viral.UI
 {
     public class StartMenuPanelHandler : MonoBehaviour
     {

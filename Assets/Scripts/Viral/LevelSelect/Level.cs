@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace Viral
 {
     public class Level
     {
-
+        [Serializable]
         public struct Location
         {
             public enum Type
@@ -40,6 +41,12 @@ namespace Viral
                 this.type = type;
                 this.side = side;
             }
+
+            public Location(int i = 0)
+            {
+                type = Type.NULL;
+                side = Side.NULL;
+            }
         }
 
         public enum Type
@@ -47,7 +54,8 @@ namespace Viral
             NULL = -1,
             MUSCLE = 0,
             ORGAN = 1,
-            INTESTINE = 2
+            INTESTINE = 2,
+            BONE = 3
         }
 
         public enum Priority
@@ -60,10 +68,38 @@ namespace Viral
 
         public string name;
         public Location location;
-        public Side side;
         public Type type;
         public Priority priority;
+        public bool isActive;
         public int daysLeft;
 
+        public Level(Location? location = null, Type? type = null, 
+            Priority? priority = null, string name = null)
+        {
+            if (location == null)
+                this.location = new Location();
+            else
+                this.location = (Location)location;
+
+            if (type == null)
+                this.type = Type.NULL;
+            else
+                this.type = (Type)type;
+
+            if (priority == null)
+                this.priority = Priority.NULL;
+            else
+                this.priority = (Priority)priority;
+
+            if (name == null)
+            {
+                string addon = "";
+                if (this.location.side > Location.Side.NONE)
+                    addon = this.location.side.ToString().ToLower() + " ";
+                this.name = addon + this.location.type.ToString().ToLower();
+            }
+            else
+                this.name = name;
+        }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Viral
+namespace Viral.LevelSelect
 {
     public class LevelGraph
     {
@@ -27,23 +27,23 @@ namespace Viral
             }
         }
 
-        public Dictionary<Level.Location, Node> graph;
+        public Dictionary<Level, Node> graph;
 
         public LevelGraph()
         {
-            graph = new Dictionary<Level.Location, Node>();
+            graph = new Dictionary<Level, Node>(); // used for access
             foreach (Level.Location.Type location in System.Enum.GetValues(typeof(Level.Location)))
             {
-                Node node = new Node();
-                List<Vertex> verts = new List<Vertex>();
-                Vertex vert = new Vertex();
                 switch (location) {
                     case Level.Location.Type.NULL:
                         Debug.Log("ERROR: NULL value.");
                         break;
                     case Level.Location.Type.BRAIN:
                         graph.Add(
-                            new Level.Location(location, Level.Location.Side.NONE),
+                            new Level(
+                                new Level.Location(location, Level.Location.Side.NONE),
+                                Level.Type.ORGAN
+                                ),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -54,7 +54,9 @@ namespace Viral
                         break;
                     case Level.Location.Type.SPINE:
                         graph.Add(
-                            new Level.Location(location, Level.Location.Side.NONE),
+                            new Level(
+                                new Level.Location(location, Level.Location.Side.NONE),
+                                Level.Type.BONE),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -73,7 +75,9 @@ namespace Viral
                         break;
                     case Level.Location.Type.COLON:
                         graph.Add(
-                            new Level.Location(location, Level.Location.Side.NONE),
+                            new Level(
+                                new Level.Location(location, Level.Location.Side.NONE),
+                                Level.Type.INTESTINE),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -88,7 +92,9 @@ namespace Viral
                         break;
                     case Level.Location.Type.HEART:
                         graph.Add(
-                            new Level.Location(location, Level.Location.Side.NONE),
+                            new Level(
+                                new Level.Location(location, Level.Location.Side.NONE),
+                                Level.Type.ORGAN),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -117,18 +123,20 @@ namespace Viral
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                    new Level.Location(location, side),
-                                    AddVertexArrayToNode(
-                                        new Vertex[] {
-                                            new Vertex(
-                                                Level.Location.Type.PECTORALS,
-                                                side,
-                                                2),
-                                            new Vertex(
-                                                Level.Location.Type.TRICEPTS,
-                                                side,
-                                                1)
-                                        }));
+                                        new Level(
+                                            new Level.Location(location, side),
+                                            Level.Type.MUSCLE),
+                                        AddVertexArrayToNode(
+                                            new Vertex[] {
+                                                new Vertex(
+                                                    Level.Location.Type.PECTORALS,
+                                                    side,
+                                                    2),
+                                                new Vertex(
+                                                    Level.Location.Type.TRICEPTS,
+                                                    side,
+                                                    1)
+                                            }));
                                     break;
                             }
                         }
@@ -146,14 +154,20 @@ namespace Viral
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                    new Level.Location(location, side),
-                                    AddVertexArrayToNode(
-                                        new Vertex[] {
-                                            new Vertex(
-                                                Level.Location.Type.BICEPTS,
-                                                side,
-                                                1),
-                                        }));
+                                        new Level(
+                                            new Level.Location(location, side),
+                                            Level.Type.MUSCLE),
+                                        AddVertexArrayToNode(
+                                            new Vertex[] {
+                                                new Vertex(
+                                                    Level.Location.Type.BICEPTS,
+                                                    side,
+                                                    1),
+                                                new Vertex(
+                                                    Level.Location.Type.TRICEPTS,
+                                                    side == Level.Location.Side.LEFT ? Level.Location.Side.RIGHT : Level.Location.Side.LEFT,
+                                                    1)
+                                            }));
                                     break;
                             }
                         }
@@ -171,7 +185,9 @@ namespace Viral
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                    new Level.Location(location, side),
+                                        new Level(
+                                            new Level.Location(location, side),
+                                            Level.Type.MUSCLE),
                                     AddVertexArrayToNode(
                                         new Vertex[] {
                                             new Vertex(
@@ -198,7 +214,9 @@ namespace Viral
                         break;
                     case Level.Location.Type.ABDOMEN:
                         graph.Add(
-                            new Level.Location(location, Level.Location.Side.NONE),
+                            new Level(
+                                new Level.Location(location, Level.Location.Side.NONE),
+                                Level.Type.MUSCLE),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -236,7 +254,9 @@ namespace Viral
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                        new Level.Location(location, side),
+                                        new Level(
+                                            new Level.Location(location, side),
+                                            Level.Type.MUSCLE),
                                         AddVertexArrayToNode(
                                             new Vertex[] {
                                                 new Vertex(
@@ -265,14 +285,20 @@ namespace Viral
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                    new Level.Location(location, side),
-                                    AddVertexArrayToNode(
-                                        new Vertex[] {
-                                            new Vertex(
-                                                Level.Location.Type.QUADRICEPS,
-                                                side,
-                                                1),
-                                        }));
+                                         new Level(
+                                             new Level.Location(location, side),
+                                             Level.Type.MUSCLE),
+                                         AddVertexArrayToNode(
+                                            new Vertex[] {
+                                                new Vertex(
+                                                    Level.Location.Type.QUADRICEPS,
+                                                    side,
+                                                    1),
+                                                new Vertex(
+                                                    Level.Location.Type.CALVES,
+                                                    side == Level.Location.Side.LEFT ? Level.Location.Side.RIGHT : Level.Location.Side.LEFT,
+                                                    1)
+                                            }));
                                     break;
                             }
                         }
@@ -281,7 +307,7 @@ namespace Viral
             }
         }
 
-        public LevelGraph(Dictionary<Level.Location, Node> dictionary)
+        public LevelGraph(Dictionary<Level, Node> dictionary)
         {
             graph = dictionary;
         }

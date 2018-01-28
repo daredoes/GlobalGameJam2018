@@ -131,5 +131,10 @@ namespace Viral
         {
             TogglePanel(SettingsPanel, new GameObject[] { StartMenuPanel });
         }
+
+        public void StartLevelSelect() // toggles level select
+        {
+            TogglePanel(LevelSelectPanel);
+        }
     }
 }
