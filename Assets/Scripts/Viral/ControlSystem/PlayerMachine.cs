@@ -45,6 +45,16 @@ namespace Viral.ControlSystem
             }
 
         }
+
+        public bool IsStunned
+        {
+            get
+            {
+                return timeStunned > 0;
+            }
+        }
+
+         
         public float absorptionTime = 5.0f;
 
         float timeStunned = 0;

@@ -79,11 +79,14 @@ namespace Viral.ControlSystem.AttackSystem
         {
             base.LateGlobalSuperUpdate();
             //Replace with controller input later, using unity input for testing
+
+            if (GetComponent<Viral.ControlSystem.PlayerMachine>().IsStunned) { return; }
+
+
             if (UnityEngine.Input.GetKeyDown(KeyCode.LeftShift))
             {
                 currentState = (currentState.Equals(PlayerAttackType.Melee)) ? PlayerAttackType.Ranged : PlayerAttackType.Melee;   
             }
-
         }
 
         void Melee_EnterState()
@@ -95,6 +98,8 @@ namespace Viral.ControlSystem.AttackSystem
 
         void Melee_SuperUpdate()
         {
+            if (GetComponent<Viral.ControlSystem.PlayerMachine>().IsStunned) { return; }
+
             if (UnityEngine.Input.GetKey(KeyCode.F))
             {
                 coolDownLeft = coolDownTime;
@@ -126,6 +131,7 @@ namespace Viral.ControlSystem.AttackSystem
 
             if (coolDownLeft <= 0) {
 
+                if (GetComponent<Viral.ControlSystem.PlayerMachine>().IsStunned) { return; }
 
                 if (Input.Current.AttackInput)
                 {

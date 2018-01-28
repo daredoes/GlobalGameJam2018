@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 namespace Viral.ControlSystem.AttackSystem {
-    public class Ammo : MonoBehaviour {
+    public class Ammo : PooledObject {
 
 
         public float damage;
@@ -18,8 +18,6 @@ namespace Viral.ControlSystem.AttackSystem {
         {
             damage *= damageAmp;
             speed *= speedAmp;
-
-
             //Probably just add force to be done with it, could deal with patterns alter
 
             while (this.gameObject.activeInHierarchy)
@@ -36,8 +34,8 @@ namespace Viral.ControlSystem.AttackSystem {
             
                 //GetComponent<PooledObject>().BackToPool();
                 Debug.Log("hello");
-                //SO this is called meaning did collide
-
+            //SO this is called meaning did collide
+            BackToPool();
                 //Call take damage on some script on the AI, not sure what but on something
              other.GetComponent<Viral.ControlSystem.ControllerStateMachine>().TakeDamage(damage, dmgType, other.transform.position - transform.position);
     
