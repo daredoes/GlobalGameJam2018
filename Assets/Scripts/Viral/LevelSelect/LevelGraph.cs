@@ -68,21 +68,6 @@ namespace Viral.LevelSelect
                                         2)
                                 }));
                         break;
-                    case Level.Location.Type.COLON:
-                        graph.Add(
-                            new Level.Location(location, Level.Location.Side.NONE),
-                            AddVertexArrayToNode(
-                                new Vertex[] {
-                                    new Vertex(
-                                        Level.Location.Type.HEART,
-                                        Level.Location.Side.NONE,
-                                        3),
-                                    new Vertex(
-                                        Level.Location.Type.ABDOMEN,
-                                        Level.Location.Side.NONE,
-                                        2)
-                                }));
-                        break;
                     case Level.Location.Type.HEART:
                         graph.Add(
                             new Level.Location(location, Level.Location.Side.NONE),
@@ -100,6 +85,21 @@ namespace Viral.LevelSelect
                                         Level.Location.Type.PECTORALS,
                                         Level.Location.Side.RIGHT,
                                         1)
+                                }));
+                        break;
+                    case Level.Location.Type.COLON:
+                        graph.Add(
+                            new Level.Location(location, Level.Location.Side.NONE),
+                            AddVertexArrayToNode(
+                                new Vertex[] {
+                                    new Vertex(
+                                        Level.Location.Type.HEART,
+                                        Level.Location.Side.NONE,
+                                        3),
+                                    new Vertex(
+                                        Level.Location.Type.ABDOMEN,
+                                        Level.Location.Side.NONE,
+                                        2)
                                 }));
                         break;
                     case Level.Location.Type.BICEPTS:

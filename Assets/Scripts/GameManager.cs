@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Viral
 {
@@ -64,6 +65,12 @@ namespace Viral
             //ChangeState(State.NULL);
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+                ReloadScene();
+        }
+
         #endregion
 
         #region Game Functions
@@ -71,6 +78,11 @@ namespace Viral
         public void Pause(bool onOff)
         {
             Time.timeScale = onOff ? 0 : 1;
+        }
+
+        public void ReloadScene()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         #endregion
@@ -105,12 +117,15 @@ namespace Viral
         private void OnNewGameStart()
         {
             Pause(true);
+            data.daysAlive = 0;
+            GUIManager.Instance.LSManager.UpdateDaysCountText();
             GUIManager.Instance.LSManager.Initial();
         }
 
         private void OnPreGameStart()
         {
             Pause(true);
+            ++data.daysAlive;
             GUIManager.Instance.StartLevelSelect();
         }
 
