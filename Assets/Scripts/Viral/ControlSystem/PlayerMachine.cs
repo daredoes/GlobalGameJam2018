@@ -12,8 +12,9 @@ namespace Viral.ControlSystem
             Idle,
             Walk,
             Jump,
-            Block,
-            Juggle, // juggle / flinch state
+            Dash,
+            Capture,
+            Stun,// juggle / flinch state
             Attack_Melee,
             Attack_Magic,
             Throw,
@@ -21,14 +22,21 @@ namespace Viral.ControlSystem
         }
 
         #region VARS
+        
         bool previouslyOnGround;
         float groundDamping = 20f;
         float inAirDamping = 5f;
+        //Replace this with 
+        public float absorptionTime = 5.0f;
+        public float leapLength = 5.0f;
+
+        float timeLeftToAbsorb = 0;
 
 
         [SerializeField]
         private InputController _input;
         private CharacterController2D _controller;
+        
         #endregion
 
         #region PROPERTIES
@@ -51,6 +59,9 @@ namespace Viral.ControlSystem
                 if(_controller == null)
                 {
                     _controller = GetComponent<CharacterController2D>();
+
+                    //WOuld've been good way to avoidmaking method to tell player that got hit was subscribign event but guess not good
+                    // 
                 }
                 return _controller;
             }
@@ -86,6 +97,8 @@ namespace Viral.ControlSystem
 
         public void Start()
         {
+
+
             Initialize();
         }
 
@@ -96,6 +109,10 @@ namespace Viral.ControlSystem
             currentState = PlayerStates.Idle;
             statCollection.Init();
             base.Initialize();
+            //_controller.onControllerCollidedEvent += (RaycastHit2D hit) => { if (hit.transform.gameObject.CompareTag("Virus")){ Debug.Log("yo"); } };
+
+
+
         }
 
         protected override void EarlyGlobalSuperUpdate()
@@ -142,7 +159,15 @@ namespace Viral.ControlSystem
                 return;
             }
 
-            Debug.Log("[Player Machine]: " + IsGrounded);
+            if (Input.Current.AttackInput || UnityEngine.Input.GetKeyDown(KeyCode.Q))
+            {
+                currentState = PlayerStates.Dash;
+                return;
+            }
+
+            
+
+
             if (!IsGrounded)
             {
                 currentState = PlayerStates.Fall;
@@ -243,6 +268,83 @@ namespace Viral.ControlSystem
             Debug.Log("[Player Machine]: " + moveDirection);
             //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);
         }
+
+
+        void Dash_EnterState()
+        {   
+         
+            Debug.Log("Dash started");  
+
+            moveDirection.y += CalculateJumpSpeed(jumpHeight / 3, gravity);
+           
+            grounded = false;
+        }
+
+
+        //This will be checking to transition into capture state or throwing
+        void Dash_SuperUpdate()
+        {
+
+            Debug.Log("Dashing");
+
+            int direction = (moveDirection.x < 0) ? -1 : 1;
+            moveDirection.x += speed * Time.deltaTime * 2 * direction;
+
+
+            if (IsGrounded)
+            {
+                currentState = PlayerStates.Idle;
+                return;
+            }
+            
+        }
+        
+
+        //Only enters this state if current state dash and collides with something
+        void Capture_EnterState()
+        {
+
+            Debug.Log("Begun capture");
+            timeLeftToAbsorb = absorptionTime;
+        }
+
+        void Capture_SuperUpdate()
+        {
+
+            Debug.Log("capturing");
+            if (Input.Current.ThrowInput)
+            {
+                currentState = PlayerStates.Throw;
+                return;
+            }
+
+            if (timeLeftToAbsorb >= 0)
+            {
+                timeLeftToAbsorb -= Time.deltaTime;
+            }
+            else
+            {
+                Heal();
+                //Add to stats the bonus from capturing virus
+                currentState = PlayerStates.Idle;
+                return;
+            }
+        }
+
+        void Heal()
+        {
+
+        }
         #endregion
+
+        public void HitVirus()
+        {
+
+            if (currentState.Equals(PlayerStates.Dash))
+            {
+                currentState = PlayerStates.Capture;
+            }
+
+        }
     }
 }
