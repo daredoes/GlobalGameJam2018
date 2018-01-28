@@ -26,6 +26,8 @@ namespace Viral.UI
         {
             GameManager.Instance.data.difficulty = difficulty;
             GUIManager.Instance.StartLevelSelect();
+
+            GameManager.Instance.ChangeState(GameManager.State.NEWGAME);
         }
     }
 }
