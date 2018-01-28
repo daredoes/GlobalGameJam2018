@@ -12,6 +12,7 @@ namespace Viral.ControlSystem
             Idle,
             Walk,
             Jump,
+            Dash,
             Block,
             Juggle, // juggle / flinch state
             Attack_Melee,
@@ -24,6 +25,9 @@ namespace Viral.ControlSystem
         bool previouslyOnGround;
         float groundDamping = 20f;
         float inAirDamping = 5f;
+        [SerializeField]
+        private float dashCooldown = 0.5f;
+        float dashTime = 0f;
 
 
         [SerializeField]
@@ -63,6 +67,17 @@ namespace Viral.ControlSystem
                 return Controller.isGrounded;
             }
         }
+
+        public new bool CanDash{
+            get
+            {
+                if (Time.time - dashTime >= dashCooldown)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
       
 
         private Vector3 LocalMovement
@@ -87,6 +102,10 @@ namespace Viral.ControlSystem
         public void Start()
         {
             Initialize();
+        }
+
+        public void FlipSprite(){
+            Flip();
         }
 
         public override void Initialize()
@@ -136,16 +155,21 @@ namespace Viral.ControlSystem
 
         void Idle_SuperUpdate()
         {
-            if (Input.Current.JumpInput)
+            if (Input.Current.JumpInput != Vector3.zero)
             {
                 currentState = States.Jump;
                 return;
             }
 
-            Debug.Log("[Player Machine]: " + IsGrounded);
+            Debug.Log("[AI Machine]: " + IsGrounded);
             if (!IsGrounded)
             {
                 currentState = States.Fall;
+                return;
+            }
+            if (CanDash && Input.Current.DashInput != Vector3.zero)
+            {
+                currentState = States.Dash;
                 return;
             }
 
@@ -161,7 +185,7 @@ namespace Viral.ControlSystem
         
         void Walk_EnterState()
         {
-            Debug.Log("[Player Machine]: WALK");
+            Debug.Log("[AI Machine]: WALK");
             walking = true;
             anim.SetBool("WALKING", walking);
             anim.SetFloat("H_SPEED", Mathf.Abs(moveDirection.x));
@@ -169,7 +193,7 @@ namespace Viral.ControlSystem
 
         void Walk_SuperUpdate()
         {
-            if (Input.Current.JumpInput)
+            if (Input.Current.JumpInput != Vector3.zero)
             {
                 currentState = States.Jump;
                 return;
@@ -178,6 +202,11 @@ namespace Viral.ControlSystem
             if (!IsGrounded)
             {
                 currentState = States.Fall;
+                return;
+            }
+            if (CanDash && Input.Current.DashInput != Vector3.zero)
+            {
+                currentState = States.Dash;
                 return;
             }
 
@@ -209,7 +238,8 @@ namespace Viral.ControlSystem
         void Jump_EnterState()
         {
             Debug.Log("[Player Machine]: JUMP");
-            moveDirection.y += CalculateJumpSpeed(jumpHeight, gravity);
+            moveDirection.y += CalculateJumpSpeed(Input.Current.JumpInput.y, Input.Current.JumpInput.z);
+            moveDirection.x += Input.Current.JumpInput.x;
             grounded = false;
             anim.SetBool("GROUND", grounded);
         }
@@ -221,7 +251,39 @@ namespace Viral.ControlSystem
                 currentState = States.Idle;
                 return;
             }
+            if (CanDash && Input.Current.DashInput != Vector3.zero)
+            {
+                currentState = States.Dash;
+                return;
+            }
             anim.SetFloat("V_SPEED", moveDirection.y);  
+        }
+
+        void Dash_EnterState()
+        {
+            Debug.Log("[Player Machine]: DASH");
+            dashTime = Time.time + dashCooldown;
+            moveDirection.y += CalculateJumpSpeed(Input.Current.DashInput.y, Input.Current.DashInput.z);
+            int direction = facingRight ? 1 : -1;
+            moveDirection.x += Input.Current.DashInput.x * direction;
+            grounded = false;
+            anim.SetBool("GROUND", grounded);
+
+        }
+
+        void Dash_SuperUpdate()
+        {
+            if (IsGrounded)
+            {
+                currentState = States.Idle;
+                return;
+            }
+            if (CanDash && Input.Current.DashInput != Vector3.zero)
+            {
+                currentState = States.Dash;
+                return;
+            }
+            anim.SetFloat("V_SPEED", moveDirection.y);
         }
         
         void Fall_EnterState()
