@@ -127,7 +127,7 @@ namespace Viral.ControlSystem.AttackSystem
             if (coolDownLeft <= 0) {
 
 
-                if (UnityEngine.Input.GetKeyDown(KeyCode.F))
+                if (Input.Current.AttackInput)
                 {
                     if (bulletCharging == null)
                     {
@@ -138,30 +138,25 @@ namespace Viral.ControlSystem.AttackSystem
 
                         //Will create spawn point for this, ugly and bad to keep shoving this shit but fuck itt
                         bulletCharging.transform.position = bulletSpawnPoint.position;
-                        
-
+   
                         bulletCharging.SetActive(true);
                     }
-                }
-                else if (UnityEngine.Input.GetKeyUp(KeyCode.F))
-                {
-                    if (bulletCharging != null)
+                    else
                     {
-                        coolDownLeft = coolDownTime;
-
-                        StartCoroutine(bulletCharging.GetComponent<Ammo>().Shoot(damageAmp, speedAmp, GetComponent<PlayerMachine>().facingRight ? 1 : -1));
-                        bulletCharging = null;
-                        damageAmp = 0;
-                        speedAmp = 0;
+                        damageAmp += Time.deltaTime;
+                        speedAmp += Time.deltaTime * Time.deltaTime;
+                        
                     }
                 }
-                if (UnityEngine.Input.GetKey(KeyCode.F))
+                if (!Input.Current.AttackInput)
                 {
+                    coolDownLeft = coolDownTime;
 
-                    //Begin charging
-                    damageAmp += Time.deltaTime;
-                    //Speed increases by 10% of what currently is everytime
-                    speedAmp += Time.deltaTime * Time.deltaTime;
+                    StartCoroutine(bulletCharging.GetComponent<Ammo>().Shoot(damageAmp, speedAmp, GetComponent<PlayerMachine>().facingRight ? 1 : -1));
+                    bulletCharging = null;
+                    damageAmp = 0;
+                    speedAmp = 0;
+
                 }
                
 
@@ -176,6 +171,9 @@ namespace Viral.ControlSystem.AttackSystem
 
         void Ranged_ExitState()
         {
+            bulletCharging = null;
+            damageAmp = 0;
+            speedAmp = 0;
         }
 
     }
