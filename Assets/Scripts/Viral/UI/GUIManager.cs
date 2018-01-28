@@ -49,6 +49,11 @@ namespace Viral
         GameObject InGamePanel;
         [SerializeField]
         GameObject LevelSelectPanel;
+        [SerializeField]
+        GameObject GameOverPanel;
+
+        [Header("References")]
+        public LevelSelect.LevelSelectManager LSManager;
 
         [HideInInspector]
         public List<GameObject> panelList;
@@ -114,7 +119,8 @@ namespace Viral
                 StartMenuPanel   == null ? GameObject.Find("StartMenuPanel")   : StartMenuPanel,
                 InGamePanel      == null ? GameObject.Find("InGamePanel")      : InGamePanel,
                 SettingsPanel    == null ? GameObject.Find("SettingsPanel")    : SettingsPanel,
-                LevelSelectPanel == null ? GameObject.Find("LevelSelectPanel") : LevelSelectPanel
+                LevelSelectPanel == null ? GameObject.Find("LevelSelectPanel") : LevelSelectPanel,
+                GameOverPanel    == null ? GameObject.Find("GameOverPanel")    : GameOverPanel
             });
         }
 
@@ -135,6 +141,16 @@ namespace Viral
         public void StartLevelSelect() // toggles level select
         {
             TogglePanel(LevelSelectPanel);
+        }
+
+        public void StartInGame()
+        {
+            TogglePanel(InGamePanel);
+        }
+
+        public void StartGameOver()
+        {
+            TogglePanel(GameOverPanel);
         }
     }
 }

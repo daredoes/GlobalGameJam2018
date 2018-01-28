@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Prototype/UI_Ron.unity
+    guid: 773010a1dfd6dba4ab3586fdf7b74a67
+  - enabled: 1
+    path: Assets/Scenes/Prototype/MainCopy_Ron.unity
+    guid: fea74a72c0d3a6c4196460ba6d182731
   m_configObjects: {}

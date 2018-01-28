@@ -132,7 +132,7 @@ namespace Viral.StatSystem
         public void Init()
         {
             //configure stats
-            Debug.Log("[STAT COLLECTION]: Init");
+            //Debug.Log("[STAT COLLECTION]: Init");
             ConfigureStats();
             initialized = true;
         }
