@@ -1,0 +1,188 @@
+
+skeleton.png
+size: 1024,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Joker/Head
+  rotate: false
+  xy: 196, 48
+  size: 192, 204
+  orig: 192, 204
+  offset: 0, 0
+  index: -1
+Neutral/Eyes/Eye_Left0001
+  rotate: true
+  xy: 2, 10
+  size: 36, 107
+  orig: 36, 107
+  offset: 0, 0
+  index: -1
+Joker/Eyes/Eye_Left0001
+  rotate: true
+  xy: 2, 10
+  size: 36, 107
+  orig: 36, 107
+  offset: 0, 0
+  index: -1
+Neutral/Eyes/Eye_Right0001
+  rotate: true
+  xy: 609, 175
+  size: 77, 107
+  orig: 77, 107
+  offset: 0, 0
+  index: -1
+Joker/Eyes/Eye_Right0001
+  rotate: true
+  xy: 609, 175
+  size: 77, 107
+  orig: 77, 107
+  offset: 0, 0
+  index: -1
+Neutral/Hand_Left
+  rotate: true
+  xy: 390, 58
+  size: 72, 99
+  orig: 72, 99
+  offset: 0, 0
+  index: -1
+Joker/Hand_Left
+  rotate: true
+  xy: 390, 58
+  size: 72, 99
+  orig: 72, 99
+  offset: 0, 0
+  index: -1
+Neutral/Hand_Right
+  rotate: true
+  xy: 718, 182
+  size: 70, 96
+  orig: 70, 96
+  offset: 0, 0
+  index: -1
+Joker/Hand_Right
+  rotate: true
+  xy: 718, 182
+  size: 70, 96
+  orig: 70, 96
+  offset: 0, 0
+  index: -1
+Neutral/Head
+  rotate: false
+  xy: 2, 48
+  size: 192, 204
+  orig: 192, 204
+  offset: 0, 0
+  index: -1
+Neutral/Hip_Left
+  rotate: true
+  xy: 111, 2
+  size: 44, 52
+  orig: 44, 52
+  offset: 0, 0
+  index: -1
+Joker/Hip_Left
+  rotate: true
+  xy: 111, 2
+  size: 44, 52
+  orig: 44, 52
+  offset: 0, 0
+  index: -1
+Neutral/Hip_Right
+  rotate: true
+  xy: 165, 2
+  size: 44, 52
+  orig: 44, 52
+  offset: 0, 0
+  index: -1
+Joker/Hip_Right
+  rotate: true
+  xy: 165, 2
+  size: 44, 52
+  orig: 44, 52
+  offset: 0, 0
+  index: -1
+Neutral/Jaw
+  rotate: false
+  xy: 492, 155
+  size: 115, 97
+  orig: 115, 97
+  offset: 0, 0
+  index: -1
+Joker/Jaw
+  rotate: false
+  xy: 492, 155
+  size: 115, 97
+  orig: 115, 97
+  offset: 0, 0
+  index: -1
+Neutral/Shin_Left
+  rotate: false
+  xy: 816, 186
+  size: 58, 66
+  orig: 58, 66
+  offset: 0, 0
+  index: -1
+Joker/Shin_Left
+  rotate: false
+  xy: 816, 186
+  size: 58, 66
+  orig: 58, 66
+  offset: 0, 0
+  index: -1
+Neutral/Shin_Right
+  rotate: false
+  xy: 876, 186
+  size: 58, 66
+  orig: 58, 66
+  offset: 0, 0
+  index: -1
+Joker/Shin_Right
+  rotate: false
+  xy: 876, 186
+  size: 58, 66
+  orig: 58, 66
+  offset: 0, 0
+  index: -1
+Neutral/Shoulder_Left
+  rotate: false
+  xy: 936, 191
+  size: 54, 61
+  orig: 54, 61
+  offset: 0, 0
+  index: -1
+Joker/Shoulder_Left
+  rotate: false
+  xy: 936, 191
+  size: 54, 61
+  orig: 54, 61
+  offset: 0, 0
+  index: -1
+Neutral/Shoulder_Right
+  rotate: true
+  xy: 492, 99
+  size: 54, 61
+  orig: 54, 61
+  offset: 0, 0
+  index: -1
+Joker/Shoulder_Right
+  rotate: true
+  xy: 492, 99
+  size: 54, 61
+  orig: 54, 61
+  offset: 0, 0
+  index: -1
+Neutral/Torso
+  rotate: false
+  xy: 390, 132
+  size: 100, 120
+  orig: 100, 120
+  offset: 0, 0
+  index: -1
+Joker/Torso
+  rotate: false
+  xy: 390, 132
+  size: 100, 120
+  orig: 100, 120
+  offset: 0, 0
+  index: -1
