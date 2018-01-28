@@ -196,7 +196,9 @@ namespace Viral.ControlSystem
      
         public virtual void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
         {
+            Debug.Log("Previous health" + ((StatVital)statCollection[StatType.Health]).Value);
             ((StatVital)statCollection[StatType.Health]).Value -= (int)dmgAmount;
+            Debug.Log("I am hurt. New Health: " + ((StatVital)statCollection[StatType.Health]).Value);
         }
 
         /// <summary>

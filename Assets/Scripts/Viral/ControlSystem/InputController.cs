@@ -66,6 +66,9 @@ namespace Viral.ControlSystem
             }
         }
 
+     
+
+
         Vector3 Jump{
             get{
                 if (CrossPlatformInputManager.GetButtonDown("Jump"))
@@ -115,6 +118,19 @@ namespace Viral.ControlSystem
             }
         }
 
+        bool Attack
+        {
+            get
+            {
+                if (CrossPlatformInputManager.GetButton("Attack"))
+                {
+                    return true;
+                }
+                return false;
+            }
+
+        }
+
         // Use this for initialization
         void Start()
         {
@@ -135,7 +151,8 @@ namespace Viral.ControlSystem
                     MoveInput = moveInput,
                     JumpInput = Jump,
                     DashInput = Dash,
-                    SlamInput = Slam
+                    SlamInput = Slam,
+                    AttackInput = Attack
                 };
             }
             else
