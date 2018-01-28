@@ -8,7 +8,9 @@ namespace Viral.ControlSystem
     public struct NoInput
     {
         public Vector3 MoveInput;
-        public bool JumpInput;
+        public Vector3 JumpInput;
+        public Vector3 DoubleJumpInput;
+        public Vector3 DashInput;
         public bool FlipInput;
         public bool BlockInput;
         public bool AttackInput;
@@ -31,7 +33,6 @@ namespace Viral.ControlSystem
         [SerializeField]
         private AiMovement brain;
         private Vector3 _movement;
-        private bool _isJumping;
 
         public AiMachine AM
         {
@@ -69,20 +70,11 @@ namespace Viral.ControlSystem
             }
         }
 
-        public bool Jump{
-            get{
-                return _isJumping;
-            }
-            set{
-                _isJumping = value;
-            }
-        }
 
         // Use this for initialization
         void Start()
         {
             Current = new NoInput();
-            Jump = false;
             _movement = new Vector3(0, 0, 0);
         }
 
@@ -95,23 +87,17 @@ namespace Viral.ControlSystem
              */
 
             if(brain){
-                brain.Act(AM);
+                Current = brain.Act(AM);
             }
-            if (AM.IsActive)
-            {
-
-                Current = new NoInput()
-                {
-                    MoveInput = _movement,
-                    JumpInput = Jump
-                };
-            }
+           
             else
             {
                 Current = new NoInput()
                 {
                     MoveInput = Vector3.zero,
-                    JumpInput = true,
+                    JumpInput = Vector3.zero,
+                    DoubleJumpInput = Vector3.zero,
+                    DashInput = Vector3.zero,
                     FlipInput = false,
                     BlockInput = false,
                     AttackInput = false,

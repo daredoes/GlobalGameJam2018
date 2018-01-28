@@ -12,6 +12,8 @@ namespace Viral.ControlSystem
             Idle,
             Walk,
             Jump,
+            DoubleJump,
+            Dash,
             Block,
             Juggle, // juggle / flinch state
             Attack_Melee,
@@ -25,6 +27,8 @@ namespace Viral.ControlSystem
         float groundDamping = 20f;
         float inAirDamping = 5f;
 
+        float dashCooldown = 0.01f;
+        float dashTime = 0f;
 
         [SerializeField]
         private InputController _input;
@@ -61,6 +65,16 @@ namespace Viral.ControlSystem
             get
             {
                 return Controller.isGrounded;
+            }
+        }
+
+        public new bool CanDash{
+            get
+            {
+                if(Time.time - dashTime >= dashCooldown){
+                    return true;
+                }
+                return false;
             }
         }
       
@@ -136,9 +150,14 @@ namespace Viral.ControlSystem
 
         void Idle_SuperUpdate()
         {
-            if (Input.Current.JumpInput)
+            if (Input.Current.JumpInput != Vector3.zero)
             {
                 currentState = PlayerStates.Jump;
+                return;
+            }
+
+            if (CanDash && Input.Current.DashInput != Vector3.zero){
+                currentState = PlayerStates.Dash;
                 return;
             }
 
@@ -169,9 +188,14 @@ namespace Viral.ControlSystem
 
         void Walk_SuperUpdate()
         {
-            if (Input.Current.JumpInput)
+            if (Input.Current.JumpInput != Vector3.zero)
             {
                 currentState = PlayerStates.Jump;
+                return;
+            }
+            if (CanDash && Input.Current.DashInput != Vector3.zero)
+            {
+                currentState = PlayerStates.Dash;
                 return;
             }
 
@@ -209,19 +233,52 @@ namespace Viral.ControlSystem
         void Jump_EnterState()
         {
             Debug.Log("[Player Machine]: JUMP");
-            moveDirection.y += CalculateJumpSpeed(jumpHeight, gravity);
+            moveDirection.y += CalculateJumpSpeed(Input.Current.JumpInput.y, Input.Current.JumpInput.z);
+            moveDirection.x += Input.Current.JumpInput.x;
             grounded = false;
             anim.SetBool("GROUND", grounded);
         }
 
         void Jump_SuperUpdate()
         {
+            if (Input.Current.JumpInput != Vector3.zero){
+                currentState = PlayerStates.Jump;
+                return;
+            }
             if (IsGrounded)
             {
                 currentState = PlayerStates.Idle;
                 return;
             }
+            if (CanDash && Input.Current.DashInput != Vector3.zero)
+            {
+                currentState = PlayerStates.Dash;
+                return;
+            }
             anim.SetFloat("V_SPEED", moveDirection.y);  
+        }
+        void Dash_EnterState(){
+            Debug.Log("[Player Machine]: DASH");
+            dashTime = Time.time + dashCooldown;
+            moveDirection.y += CalculateJumpSpeed(Input.Current.DashInput.y, Input.Current.DashInput.z);
+            int direction = facingRight ? 1 : -1;
+            moveDirection.x += Input.Current.DashInput.x * direction;
+            grounded = false;
+            anim.SetBool("GROUND", grounded);
+            
+        }
+        void Dash_SuperUpdate(){
+            if (IsGrounded)
+            {
+                currentState = PlayerStates.Idle;
+                return;
+            }
+            if (CanDash && Input.Current.DashInput != Vector3.zero)
+            {
+                currentState = PlayerStates.Dash;
+                return;
+            }
+            anim.SetFloat("V_SPEED", moveDirection.y);
         }
         
         void Fall_EnterState()
