@@ -210,7 +210,7 @@ namespace Prime31
 
         public void OnTriggerEnter2D(Collider2D col)
         {
-            Debug.Log("Hello");
+
 
             if (onTriggerEnterEvent != null)
                 onTriggerEnterEvent(col);

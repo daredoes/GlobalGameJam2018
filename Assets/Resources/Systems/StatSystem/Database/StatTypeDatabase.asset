@@ -32,3 +32,8 @@ MonoBehaviour:
     _alias: 
     _description: 
     _icon: {fileID: 0}
+  - _id: 5
+    _name: KillCount
+    _alias: 
+    _description: 
+    _icon: {fileID: 0}

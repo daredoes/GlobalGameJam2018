@@ -15,12 +15,12 @@ namespace Viral
                 NULL = -1,
                 BRAIN = 0,
                 SPINE = 1,
-                COLON = 2,
-                HEART = 3,
-                BICEPTS = 4,
-                TRICEPTS = 5,
-                PECTORALS = 6,
-                ABDOMEN = 7,
+                HEART = 2,
+                COLON = 3,
+                PECTORALS = 4,
+                ABDOMEN = 5,
+                BICEPTS = 6,
+                TRICEPTS = 7,
                 QUADRICEPS = 8,
                 CALVES = 9
             }
@@ -100,6 +100,11 @@ namespace Viral
             }
             else
                 this.name = name;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString()+": "+name;
         }
     }
 }

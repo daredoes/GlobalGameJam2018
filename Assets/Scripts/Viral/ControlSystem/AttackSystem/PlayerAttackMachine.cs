@@ -127,13 +127,6 @@ namespace Viral.ControlSystem.AttackSystem
         }
         void Ranged_SuperUpdate()
         {
-            //In here will be swapping ammo based on input / things absorbed, need way to connect this to what Player has been able to shoot
-
-            //Will load in from pool so no need to instantiate and do resouces . load on it
-
-            //Attack Input is all on pressing, not up, down, or held so just to finish will just use Unity Engine Input, it makes harder for phone
-            //but that's minor
-            //if (Input.Current.AttackInput && reloadTimeLeft <= 0)
 
             if (coolDownLeft <= 0) {
 

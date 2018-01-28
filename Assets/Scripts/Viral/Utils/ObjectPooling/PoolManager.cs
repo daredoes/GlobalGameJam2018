@@ -42,7 +42,7 @@ public class PoolManager : MonoBehaviour {
                 spawned.gameObject.SetActive(false);
                 spawned.transform.parent = transform;
                 instance.pools[poolID].Enqueue(spawned);
-                Debug.Log("ghgh");
+
             }
 
         }

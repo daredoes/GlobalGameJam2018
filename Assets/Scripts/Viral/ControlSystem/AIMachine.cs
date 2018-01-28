@@ -179,7 +179,6 @@ namespace Viral.ControlSystem
         // Jump_SuperUpdate()
         void Idle_EnterState()
         {
-         //   Debug.Log("[Player Machine]: IDLE");
             grounded = true;
             anim.SetBool("GROUND", grounded);
             EnableShadow(true);
@@ -199,6 +198,7 @@ namespace Viral.ControlSystem
                 currentState = States.Jump;
                 return;
             }
+
 
             if (!IsGrounded)
             {
@@ -224,7 +224,6 @@ namespace Viral.ControlSystem
         
         void Walk_EnterState()
         {
-            Debug.Log("[AI Machine]: WALK");
             walking = true;
             anim.SetBool("WALKING", walking);
             anim.SetFloat("H_SPEED", Mathf.Abs(moveDirection.x));
@@ -281,7 +280,7 @@ namespace Viral.ControlSystem
 
         void Jump_EnterState()
         {
-            Debug.Log("[Player Machine]: JUMP");
+            //Debug.Log("[Player Machine]: JUMP");
             moveDirection.y += CalculateJumpSpeed(Input.Current.JumpInput.y, Input.Current.JumpInput.z);
             moveDirection.x += Input.Current.JumpInput.x;
             grounded = false;
@@ -311,6 +310,7 @@ namespace Viral.ControlSystem
 
         void Dash_EnterState()
         {
+
             dashTime = Time.time + dashCooldown;
             moveDirection.y += CalculateJumpSpeed(Input.Current.DashInput.y, Input.Current.DashInput.z);
             int direction = facingRight ? 1 : -1;
@@ -343,7 +343,6 @@ namespace Viral.ControlSystem
         
         void Fall_EnterState()
         {
-           // Debug.Log("[Player Machine]: FALL");
             grounded = false;
             anim.SetBool("GROUND", grounded);
         }

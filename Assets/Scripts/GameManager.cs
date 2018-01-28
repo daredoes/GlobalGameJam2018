@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Viral
 {
@@ -32,10 +33,23 @@ namespace Viral
         }
         #endregion
 
+        public enum State
+        {
+            NULL = -1,
+            NEWGAME = 0, // used as first pregame state
+            PREGAME = 1, // anything before the level is selected
+            INGAME = 2,  // once level is selected
+            POSTGAME = 3 // after game over in level but before pregame again
+        }
+
         static protected GameManager _instance;
         static public GameManager Instance { get { return _instance; } }
 
         public Data data;
+
+        public State state;
+
+        #region Unity Functions
 
         private void Awake()
         {
@@ -48,6 +62,86 @@ namespace Viral
             { _instance = this; }
 
             data = new Data();
+            //ChangeState(State.NULL);
         }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+                ReloadScene();
+        }
+
+        #endregion
+
+        #region Game Functions
+
+        public void Pause(bool onOff)
+        {
+            Time.timeScale = onOff ? 0 : 1;
+        }
+
+        public void ReloadScene()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        #endregion
+
+        #region State Functions
+
+        public void ChangeState(State state)
+        {
+            Debug.Log("Changing GM state: " + state);
+            this.state = state;
+            switch (state)
+            {
+                case State.NULL:
+                    Pause(true);
+                    Debug.Log("Changing GameManager.state to NULL");
+                    break;
+                case State.NEWGAME:
+                    OnNewGameStart();
+                    break;
+                case State.PREGAME:
+                    OnPreGameStart();
+                    break;
+                case State.INGAME:
+                    OnInGameStart();
+                    break;
+                case State.POSTGAME:
+                    OnPostGameStart();
+                    break;
+            }
+        }
+
+        private void OnNewGameStart()
+        {
+            Pause(true);
+            data.daysAlive = 0;
+            GUIManager.Instance.LSManager.UpdateDaysCountText();
+            GUIManager.Instance.LSManager.Initial();
+        }
+
+        private void OnPreGameStart()
+        {
+            Pause(true);
+            ++data.daysAlive;
+            GUIManager.Instance.StartLevelSelect();
+        }
+
+        private void OnInGameStart()
+        {
+            Pause(false);
+            GUIManager.Instance.StartInGame();
+        }
+
+        private void OnPostGameStart()
+        {
+            GUIManager.Instance.StartGameOver();
+            // check for success ingame then
+            GUIManager.Instance.LSManager.SetNextDayLevels();
+        }
+
+        #endregion
     }
 }

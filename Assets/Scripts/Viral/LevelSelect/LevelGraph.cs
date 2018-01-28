@@ -13,13 +13,13 @@ namespace Viral.LevelSelect
 
         public struct Vertex
         {
-            public float weight; // 3 for high priority, 2 for medium, 1 for low
+            public int weight; // 3 for high priority, 2 for medium, 1 for low
             public Level.Location endLocation;
 
             public Vertex(
                 Level.Location.Type endLocationType, 
                 Level.Location.Side endLocationSide, 
-                float weight)
+                int weight)
             {
                 this.weight = weight;
                 this.endLocation = 
@@ -27,23 +27,20 @@ namespace Viral.LevelSelect
             }
         }
 
-        public Dictionary<Level, Node> graph;
+        public Dictionary<Level.Location, Node> graph;
 
         public LevelGraph()
         {
-            graph = new Dictionary<Level, Node>(); // used for access
-            foreach (Level.Location.Type location in System.Enum.GetValues(typeof(Level.Location)))
+            graph = new Dictionary<Level.Location, Node>(); // used for access
+            foreach (Level.Location.Type location in System.Enum.GetValues(typeof(Level.Location.Type)))
             {
                 switch (location) {
                     case Level.Location.Type.NULL:
-                        Debug.Log("ERROR: NULL value.");
+                        //Debug.Log("ERROR: NULL value.");
                         break;
                     case Level.Location.Type.BRAIN:
                         graph.Add(
-                            new Level(
-                                new Level.Location(location, Level.Location.Side.NONE),
-                                Level.Type.ORGAN
-                                ),
+                            new Level.Location(location, Level.Location.Side.NONE),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -54,9 +51,7 @@ namespace Viral.LevelSelect
                         break;
                     case Level.Location.Type.SPINE:
                         graph.Add(
-                            new Level(
-                                new Level.Location(location, Level.Location.Side.NONE),
-                                Level.Type.BONE),
+                            new Level.Location(location, Level.Location.Side.NONE),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -73,28 +68,9 @@ namespace Viral.LevelSelect
                                         2)
                                 }));
                         break;
-                    case Level.Location.Type.COLON:
-                        graph.Add(
-                            new Level(
-                                new Level.Location(location, Level.Location.Side.NONE),
-                                Level.Type.INTESTINE),
-                            AddVertexArrayToNode(
-                                new Vertex[] {
-                                    new Vertex(
-                                        Level.Location.Type.HEART,
-                                        Level.Location.Side.NONE,
-                                        3),
-                                    new Vertex(
-                                        Level.Location.Type.ABDOMEN,
-                                        Level.Location.Side.NONE,
-                                        2)
-                                }));
-                        break;
                     case Level.Location.Type.HEART:
                         graph.Add(
-                            new Level(
-                                new Level.Location(location, Level.Location.Side.NONE),
-                                Level.Type.ORGAN),
+                            new Level.Location(location, Level.Location.Side.NONE),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -111,6 +87,21 @@ namespace Viral.LevelSelect
                                         1)
                                 }));
                         break;
+                    case Level.Location.Type.COLON:
+                        graph.Add(
+                            new Level.Location(location, Level.Location.Side.NONE),
+                            AddVertexArrayToNode(
+                                new Vertex[] {
+                                    new Vertex(
+                                        Level.Location.Type.HEART,
+                                        Level.Location.Side.NONE,
+                                        3),
+                                    new Vertex(
+                                        Level.Location.Type.ABDOMEN,
+                                        Level.Location.Side.NONE,
+                                        2)
+                                }));
+                        break;
                     case Level.Location.Type.BICEPTS:
                         foreach (Level.Location.Side side in System.Enum.GetValues(typeof(Level.Location.Side)))
                         {
@@ -123,9 +114,7 @@ namespace Viral.LevelSelect
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                        new Level(
-                                            new Level.Location(location, side),
-                                            Level.Type.MUSCLE),
+                                        new Level.Location(location, side),
                                         AddVertexArrayToNode(
                                             new Vertex[] {
                                                 new Vertex(
@@ -154,9 +143,7 @@ namespace Viral.LevelSelect
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                        new Level(
-                                            new Level.Location(location, side),
-                                            Level.Type.MUSCLE),
+                                        new Level.Location(location, side),
                                         AddVertexArrayToNode(
                                             new Vertex[] {
                                                 new Vertex(
@@ -185,9 +172,7 @@ namespace Viral.LevelSelect
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                        new Level(
-                                            new Level.Location(location, side),
-                                            Level.Type.MUSCLE),
+                                        new Level.Location(location, side),
                                     AddVertexArrayToNode(
                                         new Vertex[] {
                                             new Vertex(
@@ -214,9 +199,7 @@ namespace Viral.LevelSelect
                         break;
                     case Level.Location.Type.ABDOMEN:
                         graph.Add(
-                            new Level(
-                                new Level.Location(location, Level.Location.Side.NONE),
-                                Level.Type.MUSCLE),
+                             new Level.Location(location, Level.Location.Side.NONE),
                             AddVertexArrayToNode(
                                 new Vertex[] {
                                     new Vertex(
@@ -254,9 +237,7 @@ namespace Viral.LevelSelect
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                        new Level(
-                                            new Level.Location(location, side),
-                                            Level.Type.MUSCLE),
+                                         new Level.Location(location, side),
                                         AddVertexArrayToNode(
                                             new Vertex[] {
                                                 new Vertex(
@@ -285,9 +266,7 @@ namespace Viral.LevelSelect
 
                                 case Level.Location.Side.RIGHT:
                                     graph.Add(
-                                         new Level(
-                                             new Level.Location(location, side),
-                                             Level.Type.MUSCLE),
+                                         new Level.Location(location, side),
                                          AddVertexArrayToNode(
                                             new Vertex[] {
                                                 new Vertex(
@@ -307,9 +286,24 @@ namespace Viral.LevelSelect
             }
         }
 
-        public LevelGraph(Dictionary<Level, Node> dictionary)
+        public LevelGraph(Dictionary<Level.Location, Node> dictionary)
         {
             graph = dictionary;
+        }
+
+        public Level.Location GetNextLocationRandomly(Level.Location current)
+        {
+            int sum = 0;
+            List<Vertex> randomizer = new List<Vertex>();
+
+            foreach (Vertex v in graph[current].vertices)
+            {
+                sum += v.weight;
+                for (int i = 0; i < v.weight; ++i)
+                    randomizer.Add(v);
+            }
+
+            return randomizer[Random.Range(0, sum)].endLocation;
         }
 
         private Node AddVertexArrayToNode(Vertex[] vertex)
