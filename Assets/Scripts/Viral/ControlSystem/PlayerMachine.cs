@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Prime31;
+using Viral.StatSystem;
 
 namespace Viral.ControlSystem
 {
@@ -12,10 +13,9 @@ namespace Viral.ControlSystem
             Idle,
             Walk,
             Jump,
-            DoubleJump,
+            Capture,
+            Stun,
             Dash,
-            Block,
-            Juggle, // juggle / flinch state
             Attack_Melee,
             Attack_Magic,
             Throw,
@@ -23,6 +23,7 @@ namespace Viral.ControlSystem
         }
 
         #region VARS
+        
         bool previouslyOnGround;
         float groundDamping = 20f;
         float inAirDamping = 5f;
@@ -30,9 +31,25 @@ namespace Viral.ControlSystem
         float dashCooldown = 0.01f;
         float dashTime = 0f;
 
+
+        public float StunTime 
+        {
+
+            get{
+                return 2.0f;
+            }
+
+        }
+        public float absorptionTime = 5.0f;
+
+        float timeStunned = 0;
+        float timeLeftToAbsorb = 0;
+
+
         [SerializeField]
         private InputController _input;
         private CharacterController2D _controller;
+        
         #endregion
 
         #region PROPERTIES
@@ -55,6 +72,9 @@ namespace Viral.ControlSystem
                 if(_controller == null)
                 {
                     _controller = GetComponent<CharacterController2D>();
+
+                    //WOuld've been good way to avoidmaking method to tell player that got hit was subscribign event but guess not good
+                    // 
                 }
                 return _controller;
             }
@@ -84,13 +104,16 @@ namespace Viral.ControlSystem
             get
             {
                 Vector3 local = Vector3.zero;
-                if (Input.Current.MoveInput.x != 0)
+                if (timeStunned <= 0)
                 {
-                    local += transform.right * Input.Current.MoveInput.x;
-                }
-                if (Input.Current.MoveInput.z != 0)
-                {
-                    local += transform.forward * Input.Current.MoveInput.z;
+                    if (Input.Current.MoveInput.x != 0)
+                    {
+                        local += transform.right * Input.Current.MoveInput.x;
+                    }
+                    if (Input.Current.MoveInput.z != 0)
+                    {
+                        local += transform.forward * Input.Current.MoveInput.z;
+                    }
                 }
                 return local;
             }
@@ -100,6 +123,8 @@ namespace Viral.ControlSystem
 
         public void Start()
         {
+
+
             Initialize();
         }
 
@@ -110,15 +135,24 @@ namespace Viral.ControlSystem
             currentState = PlayerStates.Idle;
             statCollection.Init();
             base.Initialize();
+            //_controller.onControllerCollidedEvent += (RaycastHit2D hit) => { if (hit.transform.gameObject.CompareTag("Virus")){ Debug.Log("yo"); } };
+
+
+
         }
 
         protected override void EarlyGlobalSuperUpdate()
         {
+            base.EarlyGlobalSuperUpdate();
+
             // Put any code in here you want to run BEFORE the state's update function.
             // This is run regardless of what state you're in
-            base.EarlyGlobalSuperUpdate();
-            //Flip the character
-            if ((Input.Current.MoveInput.x > 0 && !facingRight) || (Input.Current.MoveInput.x < 0 && facingRight)) { Flip(); }
+            if (timeStunned <= 0)
+            {
+
+                //Flip the character
+                if ((Input.Current.MoveInput.x > 0 && !facingRight) || (Input.Current.MoveInput.x < 0 && facingRight)) { Flip(); }
+            }
         }
 
         protected override void LateGlobalSuperUpdate()
@@ -126,7 +160,10 @@ namespace Viral.ControlSystem
             // Put any code in here you want to run AFTER the state's update function.
             // This is run regardless of what state you're in
             // Move the player by our velocity every frame
+
             base.LateGlobalSuperUpdate();
+            Debug.Log(currentState.ToString());
+            if (currentState.Equals(PlayerStates.Stun)) { }
             //transform.position += moveDirection * Time.deltaTime;
             var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
             moveDirection.x = Mathf.Lerp(moveDirection.x, LocalMovement.x * speed, Time.deltaTime * smoothedMovementFactor);
@@ -164,9 +201,14 @@ namespace Viral.ControlSystem
             Debug.Log("[Player Machine]: " + IsGrounded);
             if (!IsGrounded)
             {
-                currentState = PlayerStates.Fall;
+                currentState = PlayerStates.Dash;
                 return;
             }
+
+            
+
+
+           
 
             if (Input.Current.MoveInput != Vector3.zero)
             {
@@ -297,9 +339,175 @@ namespace Viral.ControlSystem
             }
 
             moveDirection -= Vector3.up * gravity * Time.deltaTime;
-            Debug.Log("[Player Machine]: " + moveDirection);
             //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);
         }
+
+
+        void Dash_EnterState()
+        {   
+         
+            Debug.Log("Dash started");  
+
+            moveDirection.y += CalculateJumpSpeed(jumpHeight / 3, gravity);
+           
+            grounded = false;
+        }
+
+
+        //This will be checking to transition into capture state or throwing
+        void Dash_SuperUpdate()
+        {
+
+            Debug.Log("Dashing");
+
+            int direction = (moveDirection.x < 0) ? -1 : 1;
+            moveDirection.x += speed * Time.deltaTime * 2 * direction;
+
+
+            if (IsGrounded)
+            {
+                currentState = PlayerStates.Idle;
+                return;
+            }
+            
+        }
+        
+
+        //Only enters this state if current state dash and collides with something
+        void Capture_EnterState()
+        {
+
+            Debug.Log("Begun capture");
+            timeLeftToAbsorb = absorptionTime;
+        }
+
+        void Capture_SuperUpdate()
+        {
+
+            Debug.Log("capturing");
+
+            if (Input.Current.ThrowInput)
+            {
+                currentState = PlayerStates.Throw;
+                return;
+            }
+
+            if (timeLeftToAbsorb > 0)
+            {
+                //Works for entering state.
+                if (UnityEngine.Input.GetKeyDown(KeyCode.R))
+                {
+                    
+                    currentState = PlayerStates.Stun;
+                    timeLeftToAbsorb = 0;
+                    return;
+                }
+
+                timeLeftToAbsorb -= Time.deltaTime;
+            }
+            else
+            {
+                Heal();
+                //Add to stats the bonus from capturing virus
+                currentState = PlayerStates.Idle;
+                return;
+            }
+        }
+
+        void Capture_ExitState()
+        {
+            if (timeLeftToAbsorb > 0)
+            {
+                currentState = PlayerStates.Stun;
+                timeLeftToAbsorb = 0;
+            }
+        }
+
+        //ToDo: On Capture should call method to nab the enemy away,and on Capture exit releaseo
+        /*
+         * 
+         * 
+         * 
+         * 
+         * */
+
+        void Stun_EnterState()
+        {
+
+            Debug.Log("Entered state");
+            timeStunned = StunTime;
+            StartCoroutine(fall());
+        }
+
+        IEnumerator fall()
+        {
+            while (moveDirection.y > 0)
+            {
+                moveDirection.y -= Time.deltaTime * gravity;
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
+        void Stun_SuperUpdate()
+        {
+            if (timeStunned > 0)
+            {
+                timeStunned -= Time.deltaTime;
+                
+                moveDirection = Vector3.zero;
+            }
+            else
+            {
+                currentState = PlayerStates.Idle;
+                
+            }
+
+        }
+        
+        void Heal(int healAmount = 2)
+        {
+            ((StatVital)statCollection[StatType.Health]).Value += healAmount;
+        
+        }
+
+      
+
+        void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
+        {
+            ((StatVital)statCollection[StatType.Health]).Value -= dmgAmount;
+
+
+
+            switch (type)
+            {
+
+                case ControlSystem.AttackSystem.DamageType.FORCE_STUN:
+                    currentState = PlayerStates.Stun;
+                    return;
+                    
+                case ControlSystem.AttackSystem.DamageType.MELEE:
+                    if (currentState.Equals(PlayerStates.Capture))
+                    {
+                        currentState = PlayerStates.Stun;
+                        return;
+                    }
+                    break;
+                case ControlSystem.AttackSystem.DamageType.POISON:
+                    break;
+            }
+
+        }
+
         #endregion
+
+        public void HitVirus()
+        {
+
+            if (currentState.Equals(PlayerStates.Dash))
+            {
+                currentState = PlayerStates.Capture;
+            }
+
+        }
     }
 }

@@ -3,7 +3,6 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-
 namespace Prime31
 {
 
@@ -197,7 +196,9 @@ namespace Prime31
 
             // here, we trigger our properties that have setters with bodies
             skinWidth = _skinWidth;
-
+            onControllerCollidedEvent += onControllerCollider;
+            onTriggerEnterEvent += onTriggerEnterEvent;
+            onTriggerExitEvent += onTriggerExitEvent;
             // we want to set our CC2D to ignore all collision layers except what is in our triggerMask
             for (var i = 0; i < 32; i++)
             {
@@ -206,10 +207,26 @@ namespace Prime31
                     Physics2D.IgnoreLayerCollision(gameObject.layer, i);
             }
         }
+        void onControllerCollider(RaycastHit2D hit)
+        {
 
+            // bail out on plain old ground hits cause they arent very interesting
+            if (hit.normal.y == 1f)
+                return;
+
+            if (transform.CompareTag("Player") && hit.transform.CompareTag("Virus"))
+            {
+                //
+                transform.GetComponent<Viral.ControlSystem.PlayerMachine>().HitVirus();
+            }
+
+            // logs any collider hits if uncommented. it gets noisy so it is commented out for the demo
+            //Debug.Log( "flags: " + _controller.collisionState + ", hit.normal: " + hit.normal );
+        }
 
         public void OnTriggerEnter2D(Collider2D col)
         {
+            Debug.Log("Dfdf");
             if (onTriggerEnterEvent != null)
                 onTriggerEnterEvent(col);
         }
