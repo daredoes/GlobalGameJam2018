@@ -209,13 +209,14 @@ namespace Prime31
         }
         void onControllerCollider(RaycastHit2D hit)
         {
-            Debug.Log("hh");
+
             // bail out on plain old ground hits cause they arent very interesting
             if (hit.normal.y == 1f)
                 return;
 
             if (transform.CompareTag("Player") && hit.transform.CompareTag("Virus"))
             {
+                //
                 transform.GetComponent<Viral.ControlSystem.PlayerMachine>().HitVirus();
             }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Prime31;
+using Viral.StatSystem;
 
 namespace Viral.ControlSystem
 {
@@ -14,7 +15,7 @@ namespace Viral.ControlSystem
             Jump,
             Dash,
             Capture,
-            Stun,// juggle / flinch state
+            Stun,
             Attack_Melee,
             Attack_Magic,
             Throw,
@@ -26,10 +27,20 @@ namespace Viral.ControlSystem
         bool previouslyOnGround;
         float groundDamping = 20f;
         float inAirDamping = 5f;
-        //Replace this with 
-        public float absorptionTime = 5.0f;
-        public float leapLength = 5.0f;
 
+
+
+        public float StunTime 
+        {
+
+            get{
+                return 2.0f;
+            }
+
+        }
+        public float absorptionTime = 5.0f;
+
+        float timeStunned = 0;
         float timeLeftToAbsorb = 0;
 
 
@@ -81,13 +92,16 @@ namespace Viral.ControlSystem
             get
             {
                 Vector3 local = Vector3.zero;
-                if (Input.Current.MoveInput.x != 0)
+                if (timeStunned <= 0)
                 {
-                    local += transform.right * Input.Current.MoveInput.x;
-                }
-                if (Input.Current.MoveInput.z != 0)
-                {
-                    local += transform.forward * Input.Current.MoveInput.z;
+                    if (Input.Current.MoveInput.x != 0)
+                    {
+                        local += transform.right * Input.Current.MoveInput.x;
+                    }
+                    if (Input.Current.MoveInput.z != 0)
+                    {
+                        local += transform.forward * Input.Current.MoveInput.z;
+                    }
                 }
                 return local;
             }
@@ -117,11 +131,16 @@ namespace Viral.ControlSystem
 
         protected override void EarlyGlobalSuperUpdate()
         {
+            base.EarlyGlobalSuperUpdate();
+
             // Put any code in here you want to run BEFORE the state's update function.
             // This is run regardless of what state you're in
-            base.EarlyGlobalSuperUpdate();
-            //Flip the character
-            if ((Input.Current.MoveInput.x > 0 && !facingRight) || (Input.Current.MoveInput.x < 0 && facingRight)) { Flip(); }
+            if (timeStunned <= 0)
+            {
+
+                //Flip the character
+                if ((Input.Current.MoveInput.x > 0 && !facingRight) || (Input.Current.MoveInput.x < 0 && facingRight)) { Flip(); }
+            }
         }
 
         protected override void LateGlobalSuperUpdate()
@@ -129,7 +148,10 @@ namespace Viral.ControlSystem
             // Put any code in here you want to run AFTER the state's update function.
             // This is run regardless of what state you're in
             // Move the player by our velocity every frame
+
             base.LateGlobalSuperUpdate();
+            Debug.Log(currentState.ToString());
+            if (currentState.Equals(PlayerStates.Stun)) { }
             //transform.position += moveDirection * Time.deltaTime;
             var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
             moveDirection.x = Mathf.Lerp(moveDirection.x, LocalMovement.x * speed, Time.deltaTime * smoothedMovementFactor);
@@ -153,6 +175,13 @@ namespace Viral.ControlSystem
 
         void Idle_SuperUpdate()
         {
+            if (!IsGrounded)
+            {
+                currentState = PlayerStates.Fall;
+                return;
+            }
+
+           
             if (Input.Current.JumpInput)
             {
                 currentState = PlayerStates.Jump;
@@ -168,11 +197,7 @@ namespace Viral.ControlSystem
             
 
 
-            if (!IsGrounded)
-            {
-                currentState = PlayerStates.Fall;
-                return;
-            }
+           
 
             if (Input.Current.MoveInput != Vector3.zero)
             {
@@ -199,7 +224,7 @@ namespace Viral.ControlSystem
                 currentState = PlayerStates.Jump;
                 return;
             }
-
+        
             if (!IsGrounded)
             {
                 currentState = PlayerStates.Fall;
@@ -265,7 +290,6 @@ namespace Viral.ControlSystem
             }
 
             moveDirection -= Vector3.up * gravity * Time.deltaTime;
-            Debug.Log("[Player Machine]: " + moveDirection);
             //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);
         }
 
@@ -312,14 +336,24 @@ namespace Viral.ControlSystem
         {
 
             Debug.Log("capturing");
+
             if (Input.Current.ThrowInput)
             {
                 currentState = PlayerStates.Throw;
                 return;
             }
 
-            if (timeLeftToAbsorb >= 0)
+            if (timeLeftToAbsorb > 0)
             {
+                //Works for entering state.
+                if (UnityEngine.Input.GetKeyDown(KeyCode.R))
+                {
+                    
+                    currentState = PlayerStates.Stun;
+                    timeLeftToAbsorb = 0;
+                    return;
+                }
+
                 timeLeftToAbsorb -= Time.deltaTime;
             }
             else
@@ -331,10 +365,90 @@ namespace Viral.ControlSystem
             }
         }
 
-        void Heal()
+        void Capture_ExitState()
+        {
+            if (timeLeftToAbsorb > 0)
+            {
+                currentState = PlayerStates.Stun;
+                timeLeftToAbsorb = 0;
+            }
+        }
+
+        //ToDo: On Capture should call method to nab the enemy away,and on Capture exit releaseo
+        /*
+         * 
+         * 
+         * 
+         * 
+         * */
+
+        void Stun_EnterState()
         {
 
+            Debug.Log("Entered state");
+            timeStunned = StunTime;
+            StartCoroutine(fall());
         }
+
+        IEnumerator fall()
+        {
+            while (moveDirection.y > 0)
+            {
+                moveDirection.y -= Time.deltaTime * gravity;
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
+        void Stun_SuperUpdate()
+        {
+            if (timeStunned > 0)
+            {
+                timeStunned -= Time.deltaTime;
+                
+                moveDirection = Vector3.zero;
+            }
+            else
+            {
+                currentState = PlayerStates.Idle;
+                
+            }
+
+        }
+        
+        void Heal(int healAmount = 2)
+        {
+            ((StatVital)statCollection[StatType.Health]).Value += healAmount;
+        
+        }
+
+      
+
+        void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
+        {
+            ((StatVital)statCollection[StatType.Health]).Value -= dmgAmount;
+
+
+
+            switch (type)
+            {
+
+                case ControlSystem.AttackSystem.DamageType.FORCE_STUN:
+                    currentState = PlayerStates.Stun;
+                    return;
+                    
+                case ControlSystem.AttackSystem.DamageType.MELEE:
+                    if (currentState.Equals(PlayerStates.Capture))
+                    {
+                        currentState = PlayerStates.Stun;
+                        return;
+                    }
+                    break;
+                case ControlSystem.AttackSystem.DamageType.POISON:
+                    break;
+            }
+
+        }
+
         #endregion
 
         public void HitVirus()
