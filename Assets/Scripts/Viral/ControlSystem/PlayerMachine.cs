@@ -24,8 +24,10 @@ namespace Viral.ControlSystem
         }
 
         #region VARS
-        
-        bool previouslyOnGround;
+
+
+        AiMachine captured;
+
         float groundDamping = 20f;
         float inAirDamping = 5f;
 
@@ -55,7 +57,9 @@ namespace Viral.ControlSystem
         
         #endregion
 
-        #region PROPERTIES
+        
+        
+       #region PROPERTIES
         public InputController Input
         {
             get
@@ -76,8 +80,7 @@ namespace Viral.ControlSystem
                 {
                     _controller = GetComponent<CharacterController2D>();
 
-                    //WOuld've been good way to avoidmaking method to tell player that got hit was subscribign event but guess not good
-                    // 
+                    
                 }
                 return _controller;
             }
@@ -136,14 +139,50 @@ namespace Viral.ControlSystem
 
         #endregion
 
-        public void Start()
+        private void Awake()
         {
+          
+            Controller.onTriggerEnterEvent += CheckVirusHit;
+            Controller.onControllerCollidedEvent += OnControllerCollided;
 
-
-            Initialize();
         }
 
-        public override void Initialize()
+        private void Start()
+        {
+            Initialize();
+
+        }
+
+        void CheckVirusHit(Collider2D heck)
+        {
+            if (heck.CompareTag("Virus")){
+
+                if (currentState.Equals(PlayerStates.Dash))
+                {
+                    captured = heck.GetComponent<AiMachine>();
+                    captured.Capture();
+                    captured.transform.parent = transform;
+                    captured.transform.localScale /= 2;
+                    currentState = PlayerStates.Capture;
+
+                    return;
+                }
+                else
+                {
+                  //  int damage = heck.GetComponent<OzStatCollection>().stat
+
+                }
+            }
+
+        }
+
+        void OnControllerCollided(RaycastHit2D hit)
+        {
+             Debug.Log(hit.transform.name);
+
+        }
+
+    public override void Initialize()
         {
             //inventoryManager.OnItemEncounter += ItemEncountered;
             //inventoryManager.OnItemLeft += ItemLeft;
@@ -177,7 +216,7 @@ namespace Viral.ControlSystem
             // Move the player by our velocity every frame
 
             base.LateGlobalSuperUpdate();
-            Debug.Log(currentState.ToString());
+
             if (currentState.Equals(PlayerStates.Stun)) { }
             //transform.position += moveDirection * Time.deltaTime;
             var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
@@ -193,7 +232,7 @@ namespace Viral.ControlSystem
         // Jump_SuperUpdate()
         void Idle_EnterState()
         {
-            Debug.Log("[Player Machine]: IDLE");
+            //Debug.Log("[Player Machine]: IDLE");
             grounded = true;
             anim.SetBool("GROUND", grounded);
             EnableShadow(true);
@@ -213,7 +252,6 @@ namespace Viral.ControlSystem
                 return;
             }
 
-            Debug.Log("[Player Machine]: " + IsGrounded);
             if (!IsGrounded)
             {
                 currentState = PlayerStates.Dash;
@@ -232,7 +270,7 @@ namespace Viral.ControlSystem
         
         void Walk_EnterState()
         {
-            Debug.Log("[Player Machine]: WALK");
+          //  Debug.Log("[Player Machine]: WALK");
             walking = true;
             anim.SetBool("WALKING", walking);
             anim.SetFloat("H_SPEED", Mathf.Abs(moveDirection.x));
@@ -334,7 +372,7 @@ namespace Viral.ControlSystem
 
         void Dash_EnterState()
         {
-            Debug.Log("[Player Machine]: DASH");
+
             dashTime = Time.time + dashCooldown;
             moveDirection.y += CalculateJumpSpeed(Input.Current.DashInput.y, Input.Current.DashInput.z);
             int direction = facingRight ? 1 : -1;
@@ -406,9 +444,8 @@ namespace Viral.ControlSystem
                 //Works for entering state.
                 if (UnityEngine.Input.GetKeyDown(KeyCode.R))
                 {
-                    
-                    currentState = PlayerStates.Stun;
-                    timeLeftToAbsorb = 0;
+
+                    TakeDamage(1, AttackSystem.DamageType.MELEE, Vector3.zero);
                     return;
                 }
 
@@ -416,10 +453,15 @@ namespace Viral.ControlSystem
             }
             else
             {
-                Heal();
-                //Add to stats the bonus from capturing virus
-                currentState = PlayerStates.Idle;
-                return;
+                if (captured != null)
+                {
+                    Heal();
+                    Destroy(captured.gameObject);
+                    //Add to stats the bonus from capturing virus
+                    currentState = PlayerStates.Idle;
+
+                    return;
+                }
             }
         }
 
@@ -427,7 +469,7 @@ namespace Viral.ControlSystem
         {
             if (timeLeftToAbsorb > 0)
             {
-                currentState = PlayerStates.Stun;
+               // currentState = PlayerStates.Stun;
                 timeLeftToAbsorb = 0;
             }
         }
@@ -443,7 +485,7 @@ namespace Viral.ControlSystem
         void Stun_EnterState()
         {
 
-            Debug.Log("Entered state");
+
             timeStunned = StunTime;
             StartCoroutine(fall());
         }
@@ -495,6 +537,10 @@ namespace Viral.ControlSystem
                 case ControlSystem.AttackSystem.DamageType.MELEE:
                     if (currentState.Equals(PlayerStates.Capture))
                     {
+                        captured.Release();
+                        captured.transform.parent = null;
+                        captured.transform.localScale *= 2;
+                        captured = null;
                         currentState = PlayerStates.Stun;
                         return;
                     }
@@ -507,14 +553,6 @@ namespace Viral.ControlSystem
 
         #endregion
 
-        public void HitVirus()
-        {
-
-            if (currentState.Equals(PlayerStates.Dash))
-            {
-                currentState = PlayerStates.Capture;
-            }
-
-        }
+        
     }
 }

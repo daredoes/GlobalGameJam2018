@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 114243806541590696}
   m_Layer: 0
   m_Name: AI
-  m_TagString: Untagged
+  m_TagString: Virus
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c93f84f7be7a44ce3abb7395f56020ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  am: {fileID: 0}
+  am: {fileID: 114373878390113854}
   brain: {fileID: 11400000, guid: 395a92138e90941d1a28a6b909a3745f, type: 2}
 --- !u!114 &114373878390113854
 MonoBehaviour:
@@ -208,6 +208,7 @@ MonoBehaviour:
   jumpHeight: 4
   gravity: 20
   dashCooldown: 0.5
+  slamCooldown: 0.5
   _input: {fileID: 0}
 --- !u!114 &114568694665419092
 MonoBehaviour:
