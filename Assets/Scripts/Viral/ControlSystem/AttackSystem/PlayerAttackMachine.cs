@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Viral.ControlSystem.AttackSystem
 {
-    public class PlayerAttackMachine : ControllerStateMachine
+    //Didn't make this generic made it very specific for player
+    public class PlayerAttackMachine : StateMachine
     {
 
         //What I could do is instead of put ammo types along with it is maybe PlayerAttack types not just melee/ranged but just different weapons period?
@@ -19,24 +20,29 @@ namespace Viral.ControlSystem.AttackSystem
 
         enum AmmoType
         {
+            DefaultAmmo
         }
 
+#region Variables
         //Some dupe code, I could continue to handle input in PlayerMachine, but already alot there
         private InputController _input;
-        //Or would ammo be a completely different machine? Cause think that's overkill lol.
         AmmoType ammoType;
 
 
-        public float reloadTime = 5.0f;
-        float reloadTimeLeft;
+        public float coolDownTime = 5.0f;
+        float coolDownLeft;
+
 
         public float damageAmpCap = 2.0f;
         public float speedAmpCap = 1.0f;
         float damageAmp;
         float speedAmp;
 
+        //Only can charge one bullet at a time
         GameObject bulletCharging;
+        public Transform bulletSpawnPoint;
 
+#endregion
         public InputController Input
         {  
             get
@@ -56,12 +62,11 @@ namespace Viral.ControlSystem.AttackSystem
         }
 
 
-        public override void Initialize()
+        public void Initialize()
         {
-            base.Initialize();
 
             currentState = PlayerAttackType.Ranged;
-           // ammoType = AmmoType.QuickShot;
+            ammoType = AmmoType.DefaultAmmo;
 
         }
 
@@ -85,11 +90,16 @@ namespace Viral.ControlSystem.AttackSystem
         {
             //For bringing out weapon
             Debug.Log("Now melee mode");
+            
         }
 
         void Melee_SuperUpdate()
         {
-
+            if (UnityEngine.Input.GetKey(KeyCode.F))
+            {
+                coolDownLeft = coolDownTime;
+                //ToDo: Animaion+ check for nearest enemy within collision of melee range
+            }
         }
 
         void Melee_ExitState()
@@ -114,45 +124,53 @@ namespace Viral.ControlSystem.AttackSystem
             //but that's minor
             //if (Input.Current.AttackInput && reloadTimeLeft <= 0)
 
-            if (reloadTimeLeft <= 0) {
+            if (coolDownLeft <= 0) {
 
 
+                if (UnityEngine.Input.GetKeyDown(KeyCode.F))
+                {
+                    if (bulletCharging == null)
+                    {
+                        Debug.Log("Prefab/PlayerAmmo" + ammoType.ToString());
+                        bulletCharging = Instantiate(Resources.Load("Prefab/PlayerAmmo/" + ammoType.ToString()) as GameObject);
+                        //PooledObject ammoPrefab = PoolManager.instance.Acquire(ammoType.toString());
+
+
+                        //Will create spawn point for this, ugly and bad to keep shoving this shit but fuck itt
+                        bulletCharging.transform.position = bulletSpawnPoint.position;
+                        
+
+                        bulletCharging.SetActive(true);
+                    }
+                }
+                else if (UnityEngine.Input.GetKeyUp(KeyCode.F))
+                {
+                    if (bulletCharging != null)
+                    {
+                        coolDownLeft = coolDownTime;
+
+                        StartCoroutine(bulletCharging.GetComponent<Ammo>().Shoot(damageAmp, speedAmp, GetComponent<PlayerMachine>().facingRight ? 1 : -1));
+                        bulletCharging = null;
+                        damageAmp = 0;
+                        speedAmp = 0;
+                    }
+                }
                 if (UnityEngine.Input.GetKey(KeyCode.F))
                 {
 
                     //Begin charging
                     damageAmp += Time.deltaTime;
                     //Speed increases by 10% of what currently is everytime
-                    speedAmp += (speedAmp + Time.deltaTime) * 0.1f;
-
-                    bulletCharging = Instantiate(Resources.Load(string.Format("Prefabs/PlayerAmmo/{0}", ammoType.ToString())) as GameObject);
-                    //PooledObject ammoPrefab = PoolManager.instance.Acquire(ammoType.toString());
-                    reloadTimeLeft = reloadTime;
-
-                    bulletCharging.transform.parent = this.transform;
-                    bulletCharging.transform.localPosition = Vector3.zero;
-
-                    bulletCharging.SetActive(true);
-
+                    speedAmp += Time.deltaTime * Time.deltaTime;
                 }
+               
 
-                if (UnityEngine.Input.GetKeyUp(KeyCode.F))
-                {
-                    bulletCharging.GetComponent<Ammo>().Shoot(damageAmp, speedAmp);
-                    damageAmp = 0;
-                    speedAmp = 0;
-                }
-
-
-                if (bulletCharging != null)
-                {
-                    bulletCharging.transform.Rotate(new Vector3(0, 0, GetComponent<PlayerMachine>().facingRight ? -90 : 90));
-                }
-
-                if (reloadTimeLeft > 0)
-                {
-                    reloadTimeLeft -= Time.deltaTime;
-                }
+             
+            }
+            else if (coolDownLeft > 0)
+            {
+                Debug.Log(coolDownLeft);
+                coolDownLeft -= Time.deltaTime;
             }
         }
 

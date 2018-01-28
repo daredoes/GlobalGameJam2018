@@ -10,14 +10,20 @@ public class Ammo : MonoBehaviour {
 
 
     //Actually shoot off the Ammo
-	public void Shoot(float damageAmp, float speedAmp)
+	public IEnumerator Shoot(float damageAmp, float speedAmp, int direction)
     {
         damage *= damageAmp;
         speed *= speedAmp;
 
 
         //Probably just add force to be done with it, could deal with patterns alter
-        GetComponent<Rigidbody2D>().AddForce(transform.forward * speed);
+
+        while (this.gameObject.activeInHierarchy)
+        {
+            transform.Translate(Vector3.right * speed * direction);
+            Debug.Log("hello");
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     
@@ -27,7 +33,7 @@ public class Ammo : MonoBehaviour {
         {
           
             //Haven't merged in object pooling so commented out for now
-          //  GetComponent<PooledObject>().BackToPool();
+            //  GetComponent<PooledObject>().BackToPool();
             
 
             //Need to hurt other viruses by this bullet's damage.
