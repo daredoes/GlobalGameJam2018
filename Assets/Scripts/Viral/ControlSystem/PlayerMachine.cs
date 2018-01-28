@@ -88,7 +88,7 @@ namespace Viral.ControlSystem
             }
         }
 
-        public new bool CanDash{
+        public bool CanDash{
             get
             {
                 if(Time.time - dashTime >= dashCooldown){
@@ -444,7 +444,7 @@ namespace Viral.ControlSystem
 
         void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
         {
-            ((StatVital)statCollection[StatType.Health]).Value -= dmgAmount;
+            ((StatVital)statCollection[StatType.Health]).Value -= (int)dmgAmount;
 
 
 

@@ -29,6 +29,9 @@ namespace Viral.ControlSystem
         private float dashCooldown = 0.5f;
         float dashTime = 0f;
 
+        float dashTime = 0f;
+        float dashCooldown = 1f;
+
 
         [SerializeField]
         private NoInputController _input;
@@ -68,7 +71,8 @@ namespace Viral.ControlSystem
             }
         }
 
-        public new bool CanDash{
+        public bool CanDash
+        {
             get
             {
                 if (Time.time - dashTime >= dashCooldown)
@@ -78,6 +82,7 @@ namespace Viral.ControlSystem
                 return false;
             }
         }
+
       
 
         private Vector3 LocalMovement
@@ -115,6 +120,10 @@ namespace Viral.ControlSystem
             currentState = States.Idle;
             statCollection.Init();
             base.Initialize();
+        }
+
+        public void FlipSprite(){
+            Flip();
         }
 
         protected override void EarlyGlobalSuperUpdate()
