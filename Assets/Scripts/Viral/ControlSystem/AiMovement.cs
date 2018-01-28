@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Viral.ControlSystem {
     public abstract class AiMovement : ScriptableObject
     {
+       
         public virtual NoInput Act(AiMachine am)
         {
             return new NoInput()

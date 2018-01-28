@@ -194,11 +194,15 @@ namespace Viral.ControlSystem
             return Mathf.Sqrt(2 * jumpHeight * gravity);
         }
      
+        public virtual void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
+        {
+            ((StatVital)statCollection[StatType.Health]).Value -= (int)dmgAmount;
+        }
 
         /// <summary>
         /// Flips the character's sprites
         /// </summary>
-        protected virtual void Flip()
+        public virtual void Flip()
         {
             facingRight = !facingRight;
             Vector3 temp = characterSprites.transform.localScale;
