@@ -121,6 +121,7 @@ namespace Viral.ControlSystem
 
         public void Start()
         {
+            Controller.onTriggerEnterEvent += (Collider2D other) => { if (other.CompareTag("Player")) { AttackPlayer(other.GetComponent<PlayerMachine>()); } };
             Initialize();
         }
 
@@ -134,6 +135,7 @@ namespace Viral.ControlSystem
             //inventoryManager.OnItemLeft += ItemLeft;
             currentState = States.Idle;
             statCollection.Init();
+
             base.Initialize();
         }
 
@@ -371,6 +373,37 @@ namespace Viral.ControlSystem
         void Captured_EnterState()
         {
             moveDirection = Vector3.zero;
+
+        }
+
+        void AttackPlayer(PlayerMachine player)
+        {
+            //Multiplier for type of enemy.
+            float damageDealt = 1;
+            
+            //Just random hard values for now.
+            Debug.Log("player attacked");
+            if (currentState.Equals( States.Slam)) {
+                Debug.Log("Slammed player");
+                damageDealt += 10;
+
+            }
+            else if (currentState.Equals(States.Dash))
+            {
+                Debug.Log("Dashed player");
+                damageDealt += 5;
+
+            }
+            else if (currentState.Equals(States.Throw))
+            {
+                Debug.Log("Threw player");
+                damageDealt += 7;
+            }
+
+
+        
+
+            player.TakeDamage(damageDealt, Viral.ControlSystem.AttackSystem.DamageType.MELEE, transform.position - player.transform.position);
 
         }
 

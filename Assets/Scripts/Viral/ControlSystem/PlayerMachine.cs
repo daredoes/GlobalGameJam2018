@@ -20,7 +20,8 @@ namespace Viral.ControlSystem
             Attack_Melee,
             Attack_Magic,
             Throw,
-            Fall
+            Fall,
+            Dead
         }
 
         #region VARS
@@ -132,7 +133,7 @@ namespace Viral.ControlSystem
             get
             {
                 Vector3 local = Vector3.zero;
-                if (timeStunned <= 0)
+                if (timeStunned <= 0 && !currentState.Equals(PlayerStates.Dead))
                 {
                     if (Input.Current.MoveInput.x != 0)
                     {
@@ -211,7 +212,7 @@ namespace Viral.ControlSystem
 
             // Put any code in here you want to run BEFORE the state's update function.
             // This is run regardless of what state you're in
-            if (timeStunned <= 0)
+            if (timeStunned <= 0 && !currentState.Equals(PlayerStates.Dead))
             {
 
                 //Flip the character
@@ -227,13 +228,16 @@ namespace Viral.ControlSystem
 
             base.LateGlobalSuperUpdate();
 
-            if (currentState.Equals(PlayerStates.Stun)) { }
+
+            if (currentState.Equals(PlayerStates.Stun) || currentState.Equals(PlayerStates.Dead)) { }
             //transform.position += moveDirection * Time.deltaTime;
             var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
             moveDirection.x = Mathf.Lerp(moveDirection.x, LocalMovement.x * speed, Time.deltaTime * smoothedMovementFactor);
             moveDirection.y -= gravity * Time.deltaTime;
             Controller.move(moveDirection * Time.deltaTime);
             moveDirection = Controller.velocity;
+
+
         }
 
         #region STATES
@@ -531,12 +535,28 @@ namespace Viral.ControlSystem
         
         }
 
+        void Dead_EnterState()
+        {
+
+        }
       
+
+        void Dead_SuperUpdate()
+        {
+            moveDirection = Vector3.zero;
+
+        }
 
         public override void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
         {
             ((StatVital)statCollection[StatType.Health]).Value -= (int)dmgAmount;
-
+            Debug.Log("Current Health: " + ((StatVital)statCollection[StatType.Health]).Value);
+            if (((StatVital)statCollection[StatType.Health]).Value <= 0)
+            {
+                Debug.Log("Dead");
+                currentState = PlayerStates.Dead;
+                return;
+            }
             switch (type)
             {
 
@@ -545,6 +565,7 @@ namespace Viral.ControlSystem
                     return;
                     
                 case ControlSystem.AttackSystem.DamageType.MELEE:
+
                     if (currentState.Equals(PlayerStates.Capture))
                     {
                         captured.Release();

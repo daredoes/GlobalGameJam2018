@@ -68,6 +68,12 @@ namespace Viral.ControlSystem.AttackSystem
             currentState = PlayerAttackType.Ranged;
             ammoType = AmmoType.DefaultAmmo;
 
+
+            foreach (var ammo in System.Enum.GetValues(typeof(AmmoType)))
+            {
+                GameObject prefab = Instantiate(Resources.Load("Prefab/PlayerAmmo/" + ammoType.ToString()) as GameObject);
+                PoolManager.instance.AddPool(ammo.ToString(),prefab.GetComponent<PooledObject>(), 12);
+            }
         }
 
         protected override void EarlyGlobalSuperUpdate()
@@ -138,9 +144,9 @@ namespace Viral.ControlSystem.AttackSystem
                     if (bulletCharging == null)
                     {
                         Debug.Log("Prefab/PlayerAmmo" + ammoType.ToString());
-                        bulletCharging = Instantiate(Resources.Load("Prefab/PlayerAmmo/" + ammoType.ToString()) as GameObject);
-                        //PooledObject ammoPrefab = PoolManager.instance.Acquire(ammoType.toString());
-
+                        //bulletCharging = Instantiate(Resources.Load("Prefab/PlayerAmmo/" + ammoType.ToString()) as GameObject);
+                        PooledObject ammoPrefab = PoolManager.instance.Acquire(ammoType.ToString());
+                        bulletCharging = ammoPrefab.gameObject;
 
                         //Will create spawn point for this, ugly and bad to keep shoving this shit but fuck itt
                         bulletCharging.transform.position = bulletSpawnPoint.position;
