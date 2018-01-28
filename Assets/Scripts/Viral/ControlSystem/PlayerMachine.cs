@@ -220,11 +220,6 @@ namespace Viral.ControlSystem
                 return;
             }
 
-            
-
-
-           
-
             if (Input.Current.MoveInput != Vector3.zero)
             {
                 currentState = PlayerStates.Walk;
@@ -283,7 +278,7 @@ namespace Viral.ControlSystem
         void Walk_ExitState()
         {
             walking = false;
-            anim.SetBool("WALKING", walking);
+            anim.SetBool("WALKING", false);
             anim.SetFloat("H_SPEED", Mathf.Abs(moveDirection.x));
         }
 
@@ -337,7 +332,8 @@ namespace Viral.ControlSystem
             anim.SetFloat("V_SPEED", moveDirection.y);
         }
 
-        void Dash_EnterState(){
+        void Dash_EnterState()
+        {
             Debug.Log("[Player Machine]: DASH");
             dashTime = Time.time + dashCooldown;
             moveDirection.y += CalculateJumpSpeed(Input.Current.DashInput.y, Input.Current.DashInput.z);
@@ -345,8 +341,8 @@ namespace Viral.ControlSystem
             moveDirection.x += Input.Current.DashInput.x * direction;
             grounded = false;
             anim.SetBool("GROUND", grounded);
-            
         }
+
         void Dash_SuperUpdate(){
             if (IsGrounded)
             {
@@ -382,7 +378,7 @@ namespace Viral.ControlSystem
             }
 
             moveDirection -= Vector3.up * gravity * Time.deltaTime;
-            //anim.SetFloat(GameConstants.ANIM_VERTICAL_SPEEED, moveDirection.y);
+            anim.SetFloat("V_SPEED", moveDirection.y);
         }
         
 
@@ -485,11 +481,9 @@ namespace Viral.ControlSystem
 
       
 
-        void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
+        public override void TakeDamage(float dmgAmount, ControlSystem.AttackSystem.DamageType type, Vector3 direction)
         {
             ((StatVital)statCollection[StatType.Health]).Value -= (int)dmgAmount;
-
-
 
             switch (type)
             {
