@@ -26,7 +26,8 @@ namespace Viral.ControlSystem
 
         #region VARS
 
-
+        //For some reason stat's weren't updating
+        public int killCount = 0;
         AiMachine captured;
 
         float groundDamping = 20f;
@@ -456,12 +457,14 @@ namespace Viral.ControlSystem
             {
                 if (captured != null)
                 {
+                    ((StatVital)statCollection[StatType.KillCount]).Value -= 1;
+                    killCount += 1;
                     Heal();
-
-                    ((StatVital)statCollection[StatType.KillCount]).Value += 1;
 
 
                     Debug.Log("Kill Count: " + ((StatVital)statCollection[StatType.KillCount]).Value);
+                    Debug.Log("Kill Count: " + killCount);
+
                     Destroy(captured.gameObject);
 
                     //Add to stats the bonus from capturing virus

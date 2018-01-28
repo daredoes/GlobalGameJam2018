@@ -137,10 +137,11 @@ namespace Viral.ControlSystem.AttackSystem
 
             if (coolDownLeft <= 0) {
 
-                if (GetComponent<Viral.ControlSystem.PlayerMachine>().IsStunned) { return; }
 
                 if (Input.Current.AttackInput)
                 {
+                    if (GetComponent<Viral.ControlSystem.PlayerMachine>().IsStunned) { return; }
+
                     if (bulletCharging == null)
                     {
                         Debug.Log("Prefab/PlayerAmmo" + ammoType.ToString());
@@ -150,8 +151,10 @@ namespace Viral.ControlSystem.AttackSystem
 
                         //Will create spawn point for this, ugly and bad to keep shoving this shit but fuck itt
                         bulletCharging.transform.position = bulletSpawnPoint.position;
-   
+                        Viral.StatSystem.OzStatCollection statCollection = GetComponent<Viral.StatSystem.OzStatCollection>();
+                        bulletCharging.GetComponent<Ammo>().killedVirus += () => { ((Viral.StatSystem.StatVital)statCollection[Viral.StatSystem.StatType.KillCount]).Value += 1; GetComponent<PlayerMachine>().killCount += 1; };
                         bulletCharging.SetActive(true);
+                        bulletCharging.transform.parent = transform;
                     }
                     else
                     {
@@ -169,6 +172,7 @@ namespace Viral.ControlSystem.AttackSystem
                         if (coolDownLeft <= 0)
                             coolDownLeft = coolDownTime;
 
+                        bulletCharging.transform.parent = null;
                         StartCoroutine(bulletCharging.GetComponent<Ammo>().Shoot(damageAmp, speedAmp, GetComponent<PlayerMachine>().facingRight ? 1 : -1));
                         bulletCharging = null;
                         damageAmp = 0;

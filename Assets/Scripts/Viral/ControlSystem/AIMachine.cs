@@ -162,11 +162,7 @@ namespace Viral.ControlSystem
             // This is run regardless of what state you're in
             //((StatVital)statCollection[StatType.Health]).Value += healAmount;
 
-            if (((StatSystem.StatVital)statCollection[StatSystem.StatType.Health]).Value <= 0)
-            {
-                //I have pool but will use later.
-                Destroy(this);
-            }
+          
             // Move the player by our velocity every frame 
             base.LateGlobalSuperUpdate();
             //transform.position += moveDirection * Time.deltaTime;

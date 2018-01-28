@@ -40,6 +40,7 @@ public class PoolManager : MonoBehaviour {
             {
                 PooledObject spawned = (Instantiate(obj.gameObject)).GetComponent<PooledObject>();
                 spawned.gameObject.SetActive(false);
+                spawned.transform.parent = transform;
                 instance.pools[poolID].Enqueue(spawned);
                 Debug.Log("ghgh");
             }
@@ -66,7 +67,7 @@ public class PoolManager : MonoBehaviour {
         }
 
         //It should keep closure on the type local as well? Maybe wrong will test
-        obj.OnDeath += () => { obj.gameObject.SetActive(false); instance.pools[type].Enqueue(obj); };
+        obj.OnDeath += () => { obj.gameObject.SetActive(false); instance.pools[type].Enqueue(obj); obj.transform.parent = transform; };
 
         return obj;
     } 
